@@ -8,8 +8,15 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * Entity class "Dish".
+ * ************************************
+ * Сущность "Блюдо"
+ * Поля:
+ * - наименование (name)
+ * - меню (сущность "Меню") -- Убрать?
+ * - цена (price)
+ * ************************************
  */
+
 @Entity
 @Table(name = "dish")
 public class Dish extends AbstractEntity {

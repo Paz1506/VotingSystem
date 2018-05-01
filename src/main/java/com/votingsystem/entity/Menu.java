@@ -5,6 +5,16 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * ************************************
+ * Сущность "Меню"
+ * Поля:
+ * - дата (date)
+ * - список блюд dishes (сущность "Блюдо") -- Убрать?
+ * - ресторан (сущность "Ресторан") -- Убрать?
+ * ************************************
+ */
+
 @Entity
 @Table(name = "menu")
 public class Menu extends AbstractEntity {

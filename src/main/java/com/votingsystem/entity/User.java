@@ -9,6 +9,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * ************************************
+ * Сущность "Пользователь"
+ * Поля:
+ * - имя (name)
+ * - емейл (email)
+ * - пароль (password)
+ * - признак "включен" (enabled)
+ * - дата регистрации (registered)
+ * - множество ролей пользователя (roles)
+ * - список голосов пользователя (votes)
+ * ************************************
+ */
+
 @Entity
 @Table(name = "user")
 public class User extends AbstractEntity {

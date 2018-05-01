@@ -7,6 +7,15 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+/**
+ * ************************************
+ * Сущность "Ресторан"
+ * Поля:
+ * - имя
+ * - список меню (сущность "Меню") -- Убрать?
+ * ************************************
+ */
+
 @Entity
 @Table(name = "restaurant")
 public class Restaurant extends AbstractEntity {

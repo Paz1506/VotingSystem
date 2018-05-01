@@ -4,6 +4,15 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+/**
+ * ************************************
+ * Сущность "Голос"
+ * Поля:
+ * - пользователь (user) сущность "Пользователь"
+ * - дата - время голосования (dateTime)
+ * ************************************
+ */
+
 @Entity
 @Table(name = "vote")
 public class Vote extends AbstractEntity {

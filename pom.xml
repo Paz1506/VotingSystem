@@ -36,6 +36,8 @@
 
         <!--Tools-->
         <ehcache.version>3.5.2</ehcache.version>
+
+        <jackson-json.version>2.6.1</jackson-json.version>
     </properties>
 
     <build>
@@ -162,6 +164,23 @@
             <artifactId>assertj-core</artifactId>
             <version>3.9.1</version>
             <scope>test</scope>
+        </dependency>
+
+        <!--Jackson-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-hibernate5</artifactId>
+            <version>${jackson-json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson-json.version}</version>
         </dependency>
 
     </dependencies>

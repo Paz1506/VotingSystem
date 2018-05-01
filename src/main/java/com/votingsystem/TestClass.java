@@ -1,4 +1,4 @@
 package com.votingsystem;
 
-public class dummy {
+public class TestClass {
 }
