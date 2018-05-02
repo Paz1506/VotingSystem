@@ -24,7 +24,7 @@ import java.util.Set;
  */
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User extends AbstractEntity {
 
     @Column(name = "name", nullable = false)

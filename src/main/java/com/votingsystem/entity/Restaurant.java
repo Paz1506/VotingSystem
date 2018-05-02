@@ -24,6 +24,6 @@ public class Restaurant extends AbstractEntity {
     @NotNull
     private String name;
 
-    @OneToMany(mappedBy = "menu")
-    private List<Menu> menus;
+    /*@OneToMany(mappedBy = "menu")
+    private List<Menu> menus;*/
 }
