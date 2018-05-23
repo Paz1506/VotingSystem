@@ -1,11 +1,10 @@
 package com.votingsystem.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import org.hibernate.validator.constraints.Range;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import javax.validation.constraints.Size;
 
 /**
  * ************************************
@@ -16,13 +15,28 @@ import java.util.List;
  * ************************************
  */
 
+//@NamedQueries({
+//        @NamedQuery(name = Restaurant.ALL, query = "SELECT r FROM Restaurant r")
+//})
+
 @Entity
 @Table(name = "restaurant")
 public class Restaurant extends AbstractEntity {
 
+//    public static final String ALL = "Restaurant.getAll";
+
     @Column(name = "name", nullable = false)
     @NotNull
+    @Size(min = 3, max = 100)
     private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /*@OneToMany(mappedBy = "menu")
     private List<Menu> menus;*/

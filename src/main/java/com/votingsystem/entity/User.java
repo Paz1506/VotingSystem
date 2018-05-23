@@ -1,5 +1,7 @@
 package com.votingsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -51,16 +53,17 @@ public class User extends AbstractEntity {
     private Date registered = new Date();
 
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "role", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     @ElementCollection(fetch = FetchType.EAGER)
+    @JsonIgnore //TODO Сделать TO, иначе придется свой биндер String -> Set
     private Set<Role> roles;
 
-    /**
-     * Votes list of user
-     */
-    @OneToMany(mappedBy = "user")
-    private List<Vote> votes;
+//    /**
+//     * Votes list of user
+//     */
+//    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+//    private List<Vote> votes;
 
     public String getName() {
         return name;
@@ -110,11 +113,11 @@ public class User extends AbstractEntity {
         this.roles = roles;
     }
 
-    public List<Vote> getVotes() {
-        return votes;
-    }
-
-    public void setVotes(List<Vote> votes) {
-        this.votes = votes;
-    }
+//    public List<Vote> getVotes() {
+//        return votes;
+//    }
+//
+//    public void setVotes(List<Vote> votes) {
+//        this.votes = votes;
+//    }
 }

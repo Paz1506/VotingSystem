@@ -1,5 +1,6 @@
 package com.votingsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Persistable;
 
@@ -36,6 +37,7 @@ public abstract class AbstractEntity implements Persistable<Integer> {
     }
 
     @Override
+    @JsonIgnore
     public boolean isNew() {
         return this.id == null;
     }

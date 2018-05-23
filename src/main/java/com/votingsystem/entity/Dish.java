@@ -1,5 +1,6 @@
 package com.votingsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ public class Dish extends AbstractEntity {
 
     @Column(name = "name", nullable = false)
     @NotBlank
+    @NotNull
     @Size(min = 3, max = 100)
     private String name;
 
@@ -30,9 +32,11 @@ public class Dish extends AbstractEntity {
     @Range(min = 50, max = 10000)
     private Integer price;
 
+//    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id", nullable = false)
-    @NotNull
+//    @NotNull - TODO -сделать TO, иначе ошибка валидации
+    @JsonIgnore
     private Menu menu;
 
     public String getName() {
@@ -64,7 +68,7 @@ public class Dish extends AbstractEntity {
         return "Dish{" +
                 "name='" + name + '\'' +
                 ", price=" + price +
-                ", menu=" + menu +
+//                ", menu_id=" + menu.getId() +
                 ", id=" + id +
                 '}';
     }
