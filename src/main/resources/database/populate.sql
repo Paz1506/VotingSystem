@@ -30,20 +30,24 @@ INSERT INTO dish (id, name, price, menu_id) VALUES
 
 INSERT INTO users (id, name, email, password) VALUES
   (16, 'User', 'user@yandex.ru', '1234'),
-  (17, 'Admin', 'admin@gmail.com', '1234');
+  (17, 'Admin', 'admin@gmail.com', '1234'),
+  (22, 'User2', 'user2@yandex.ru', '1234'),
+  (23, 'User3', 'user3@yandex.ru', '1234');
 
 INSERT INTO role (user_id, role) VALUES
   (16, 'ROLE_USER'),
-  (17, 'ROLE_ADMIN');
+  (17, 'ROLE_ADMIN'),
+  (22, 'ROLE_USER'),
+  (23, 'ROLE_USER');
 
 INSERT INTO vote (id, date_time, user_id, restaurant_id) VALUES
-  /* Так ошибка: SQLDataException: data exception: invalid datetime format
-  (18, '2018-05-19T10:00', 16, 1),
-  (19, '2018-05-22T10:00', 16, 2),
-  (20, '2018-05-21T10:00', 16, 2),
-  (21, '2018-05-20T10:00', 16, 3);*/
+   --Так ошибка: SQLDataException: data exception: invalid datetime format
+  (18, '2018-05-19 10:00:00', 16, 1),
+  (19, '2018-05-22 10:00:00', 16, 2),
+  (20, '2018-05-21 10:00:00', 16, 2),
+  (21, '2018-05-20 10:00:00', 16, 3);
 --   Убрал кнстрейнт временно
-  (18, now(), 16, 1),
-  (19, now(), 16, 2),
-  (20, now(), 16, 2),
-  (21, now(), 16, 3);
+/*  (18, now(), 16, 1),
+  (19, now(), 17, 2),
+  (20, now(), 22, 1),
+  (21, now(), 23, 3);*/

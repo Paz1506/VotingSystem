@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -50,5 +51,10 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public List<Vote> getByUserId(int user_id) {
         return voteRepository.findByUserId(user_id);
+    }
+
+    @Override
+    public Vote getByUserIdAndDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
+        return voteRepository.findByUserIdAndDateTime(startDateTime, endDateTime, userId);
     }
 }

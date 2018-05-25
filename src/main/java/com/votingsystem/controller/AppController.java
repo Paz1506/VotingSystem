@@ -9,7 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +37,8 @@ public class AppController {
     final static String DISHES_URL = "/dishes";
     final static String VOTES_URL = "/votes";
     final static String USERS_URL = "/users";
+
+    private final static LocalTime tresholdTime = LocalTime.of(11, 0, 0);
 
     private final RestaurantService restaurantService;
     private final MenuService menuService;
@@ -86,20 +90,41 @@ public class AppController {
     }
 
     //Вернет голос ресторана по id
-    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL+"/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL + "/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Vote getRestaurantVoteById(@PathVariable("vote_id") int vote_id) {
         return voteService.getById(vote_id);
     }
 
     //Голосование пользователя за ресторан TODO прикрутить секьюрити
-    @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL/*, consumes = MediaType.APPLICATION_JSON_VALUE*/)
     public void createOrUpdateVote(@PathVariable("restaurant_id") int restaurant_id) {
 
-        Vote vote = new Vote();
-        vote.setDateTime(LocalDateTime.now());
-        vote.setRestaurant(restaurantService.getById(restaurant_id));
+        //Пока сделать все проверки здесь
+        User current_user = userService.getById(16); // Захардкодил юзера 16 (в дальнейшем из секьюрити)
 
-        voteService.save(vote);
+        //Конструируем начало и конец текущего дня
+        LocalDateTime beginCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+        LocalDateTime endCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+        //получаем текущее время
+//        LocalTime current_time = LocalTime.now();//Production
+        LocalTime current_time = LocalTime.of(12,0,0);//Fix it
+
+        //Если текущее время меньше порогового для голосования
+        if (current_time.isBefore(tresholdTime)){
+            Vote voteOfUserByCurrentDay = voteService.getByUserIdAndDateTime(beginCurrentDay, endCurrentDay, 16);
+            if (voteOfUserByCurrentDay!=null){
+                voteService.delete(voteOfUserByCurrentDay.getId());
+            } else {
+
+                Vote vote = new Vote();
+                vote.setDateTime(LocalDateTime.now());
+                vote.setRestaurant(restaurantService.getById(restaurant_id));
+                vote.setUser(current_user);//Fix it!
+
+                voteService.save(vote);
+            }
+        }
     }
 
     //=========================================
@@ -181,29 +206,28 @@ public class AppController {
     }
 
     //Вернет пользователя по id
-    @GetMapping(value = USERS_URL+"/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = USERS_URL + "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public User getUserById(@PathVariable("user_id") int user_id) {
         return userService.getById(user_id);
     }
 
     //Удалит пользователя по id
-    @DeleteMapping(value = USERS_URL+"/{user_id}")
+    @DeleteMapping(value = USERS_URL + "/{user_id}")
     public void deleteUserById(@PathVariable("user_id") int user_id) {
         userService.delete(user_id);
     }
 
     //Вернет голоса конкретного пользователя за все время
-    @GetMapping(value = USERS_URL+"/{user_id}"+VOTES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = USERS_URL + "/{user_id}" + VOTES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Vote> getVotesByUser(@PathVariable("user_id") int user_id) {
         return voteService.getByUserId(user_id);
     }
 
     //Вернет голос пользователя по id
-    @GetMapping(value = USERS_URL+"/{user_id}"+VOTES_URL+"/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = USERS_URL + "/{user_id}" + VOTES_URL + "/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Vote getUserVoteById(@PathVariable("vote_id") int vote_id) {
         return voteService.getById(vote_id);
     }
-
 
 
 }
