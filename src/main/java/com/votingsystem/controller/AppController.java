@@ -2,6 +2,8 @@ package com.votingsystem.controller;
 
 import com.votingsystem.entity.*;
 import com.votingsystem.service.*;
+import com.votingsystem.to.UserTo;
+import com.votingsystem.to.converters.UserConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,15 +207,22 @@ public class AppController {
         return userService.getAll();
     }
 
+//    //Создание или обновление пользователя
+//    @PostMapping(value = USERS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public void createOrUpdateUser(@Valid User user) {
+//        //TODO будет тоько обычный пользователь (@JsonIgnore roles). Исправить через ТО
+//        Set<Role> roles = new HashSet<>();
+//        roles.add(Role.ROLE_USER);
+//        user.setRoles(roles);
+//        userService.save(user);
+//    }
+
     //Создание или обновление пользователя
     @PostMapping(value = USERS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createOrUpdateUser(@Valid User user) {
-        //TODO будет тоько обычный пользователь (@JsonIgnore roles). Исправить через ТО
-        Set<Role> roles = new HashSet<>();
-        roles.add(Role.ROLE_USER);
-        user.setRoles(roles);
-        userService.save(user);
+    public void createOrUpdateUser(@Valid UserTo userTo) {
+        userService.save(UserConverter.getUserFromTo(userTo));
     }
+
 
     //Вернет пользователя по id
     @GetMapping(value = USERS_URL + "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)

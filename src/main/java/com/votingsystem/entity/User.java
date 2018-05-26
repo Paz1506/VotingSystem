@@ -49,7 +49,7 @@ public class User extends AbstractEntity {
     @Column(name = "enabled", nullable = false, columnDefinition = "bool default true")
     private boolean enabled = true;
 
-    @Column(name = "registered", columnDefinition = "timestamp default now()")
+    @Column(name = "registered", updatable = false, columnDefinition = "timestamp default now()")
     @NotNull
     private Date registered = new Date();
 
@@ -58,7 +58,7 @@ public class User extends AbstractEntity {
     @CollectionTable(name = "role", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     @ElementCollection(fetch = FetchType.EAGER)
-    @JsonIgnore //TODO Сделать TO, иначе придется свой биндер String -> Set
+//    @JsonIgnore //TODO Сделать TO, иначе придется свой биндер String -> Set
     private Set<Role> roles;
 
     public String getName() {
@@ -97,9 +97,9 @@ public class User extends AbstractEntity {
         return registered;
     }
 
-    public void setRegistered(Date registered) {
-        this.registered = registered;
-    }
+//    public void setRegistered(Date registered) {
+//        this.registered = registered;
+//    }
 
     public Set<Role> getRoles() {
         return roles;

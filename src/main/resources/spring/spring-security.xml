@@ -5,10 +5,12 @@
              http://www.springframework.org/schema/beans/spring-beans.xsd
              http://www.springframework.org/schema/security
              http://www.springframework.org/schema/security/spring-security.xsd"
-             xmlns:beans="http://www.springframework.org/schema/beans">
+             xmlns:beans="http://www.springframework.org/schema/beans"
+>
 
     <http pattern="/**" use-expressions="true" name="restSecurityFilterChain" create-session="stateless">
         <http-basic/>
+        <csrf disabled="true"/><!--Подсвечивается, но работает-->
         <intercept-url pattern="/v1.0/admin/**" access="hasRole('ROLE_ADMIN')"/>
         <intercept-url pattern="/**" access="permitAll()"/>
         <!--<intercept-url pattern="/**" access="isAuthenticated()"/>-->

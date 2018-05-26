@@ -25,13 +25,13 @@ public class UserTo extends RootTo implements Serializable {
 
     @NotBlank
     @Size(min = 3, max = 100)
-    @SafeHtml // https://stackoverflow.com/questions/17480809
+//    @SafeHtml // https://stackoverflow.com/questions/17480809
     private String name;
 
     @Email
     @NotBlank
     @Size(max = 100)
-    @SafeHtml
+//    @SafeHtml
     private String email;
 
     @NotBlank
