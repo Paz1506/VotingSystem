@@ -56,6 +56,16 @@ public class AppController {
     }
 
     //=========================================
+    //Работа временно тестирование Security
+    //=========================================
+
+    //Если имеем доступ, увидим надпись
+    @GetMapping(value = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getTestSecurity() {
+        return "[{\"message\":\"Access allowed\"}]";
+    }
+
+    //=========================================
     //Работа с ресторанами
     //=========================================
 
@@ -107,8 +117,8 @@ public class AppController {
         LocalDateTime endCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
         //получаем текущее время
-//        LocalTime current_time = LocalTime.now();//Production
-        LocalTime current_time = LocalTime.of(12,0,0);//Fix it
+        LocalTime current_time = LocalTime.now();//Production
+//        LocalTime current_time = LocalTime.of(12,0,0);//Fix it
 
         //Если текущее время меньше порогового для голосования
         if (current_time.isBefore(tresholdTime)){

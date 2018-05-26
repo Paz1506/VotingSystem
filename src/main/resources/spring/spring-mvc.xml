@@ -7,6 +7,8 @@
 
     <!--<bean class="com.votingsystem.controller.json.JacksonObjectMapper" id="objectMapper" factory-method="getMapper"/>-->
 
+    <import resource="spring-security.xml"/>
+
     <mvc:annotation-driven/>
     <!--<mvc:annotation-driven conversion-service="conversionService">
         <mvc:message-converters>

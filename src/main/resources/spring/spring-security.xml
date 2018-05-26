@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+             http://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/security
+             http://www.springframework.org/schema/security/spring-security.xsd"
+             xmlns:beans="http://www.springframework.org/schema/beans">
+
+    <http pattern="/**" use-expressions="true" name="restSecurityFilterChain" create-session="stateless">
+        <http-basic/>
+        <intercept-url pattern="/v1.0/admin/**" access="hasRole('ROLE_ADMIN')"/>
+        <intercept-url pattern="/**" access="permitAll()"/>
+        <!--<intercept-url pattern="/**" access="isAuthenticated()"/>-->
+    </http>
+
+    <!--В данной (демонстрационной) имплементации приложения,
+    используется NoOpPasswordEncoder, для демнострации базовых
+    возможностей авторизации в приложении.-->
+
+    <beans:bean class="org.springframework.security.crypto.password.NoOpPasswordEncoder" id="passwordEncoder" factory-method="getInstance"/>
+
+    <authentication-manager>
+        <authentication-provider user-service-ref="userServiceImpl">
+            <password-encoder ref="passwordEncoder"/>
+        </authentication-provider>
+    </authentication-manager>
+
+</beans:beans>

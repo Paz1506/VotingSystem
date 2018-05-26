@@ -1,6 +1,7 @@
 package com.votingsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -42,7 +43,7 @@ public class User extends AbstractEntity {
 
     @Column(name = "password", nullable = false)
     @NotBlank
-    @Size(min = 5, max = 100)
+    @Size(min = 5, max = 32)
     private String password;
 
     @Column(name = "enabled", nullable = false, columnDefinition = "bool default true")
@@ -52,18 +53,13 @@ public class User extends AbstractEntity {
     @NotNull
     private Date registered = new Date();
 
+//    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "role", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     @ElementCollection(fetch = FetchType.EAGER)
     @JsonIgnore //TODO Сделать TO, иначе придется свой биндер String -> Set
     private Set<Role> roles;
-
-//    /**
-//     * Votes list of user
-//     */
-//    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-//    private List<Vote> votes;
 
     public String getName() {
         return name;
