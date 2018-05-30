@@ -1,6 +1,7 @@
 package com.votingsystem.controller;
 
 import com.votingsystem.entity.*;
+import com.votingsystem.exceptions.VotingTimeExpiredException;
 import com.votingsystem.service.*;
 import com.votingsystem.to.DishTo;
 import com.votingsystem.to.MenuTo;
@@ -91,6 +92,18 @@ public class AppController {
         return restaurantService.getAll();
     }
 
+    //USER: Вернет все рестораны за текущий день, в которых созданы меню
+    //Если меню нет, ресторана просто не будет в списке
+    @GetMapping(value = RESTAURANTS_URL+"/day", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Restaurant> getAllRestaurantByCurrentDayWithMenu() {
+
+        //Конструируем начало и конец текущего дня //TODO вынести в отдельный метод
+        LocalDateTime beginCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+        LocalDateTime endCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+        return restaurantService.getAllRestaurantByCurrentDayWithMenu(beginCurrentDay, endCurrentDay);
+    }
+
     //Создание или обновление ресторана
     @PostMapping(value = RESTAURANTS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createOrUpdateRestaurant(@Valid Restaurant restaurant) {
@@ -123,7 +136,7 @@ public class AppController {
 
     //Голосование пользователя за ресторан TODO прикрутить секьюрити
     @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL/*, consumes = MediaType.APPLICATION_JSON_VALUE*/)
-    public void createOrUpdateVote(@PathVariable("restaurant_id") int restaurant_id) {
+    public void createOrUpdateVote(@PathVariable("restaurant_id") int restaurant_id) throws VotingTimeExpiredException {
 
         //Пока сделать все проверки здесь
         User current_user = userService.getById(16); // Захардкодил юзера 16 (в дальнейшем из секьюрити)
@@ -150,6 +163,8 @@ public class AppController {
 
                 voteService.save(vote);
             }
+        } else {
+            throw new VotingTimeExpiredException();
         }
     }
 
@@ -165,7 +180,7 @@ public class AppController {
 
     //TODO ошибка биндинга даты если принимаем ТО, если Entity, все нормально
     //Создание или обновление меню
-    @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL)
+    @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createOrUpdateMenu(@PathVariable("restaurant_id") int restaurant_id, @Valid MenuTo menuTo) {
         System.out.println("!!!!!!!!!!!! " + menuTo);
         Menu menu = MenuConverter.getMenuFromTo(menuTo);

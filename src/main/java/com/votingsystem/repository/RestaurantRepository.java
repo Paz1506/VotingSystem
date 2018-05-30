@@ -7,10 +7,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Integer> {
+
+    @Query("SELECT r FROM Restaurant r WHERE r.id IN (SELECT m.restaurant.id FROM Menu m WHERE m.date BETWEEN :startDateTime AND :endDateTime)")
+    List<Restaurant> findAllRestaurantByCurrentDayWithMenu(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime);
 
 //    List<Restaurant> findAll();
 //
