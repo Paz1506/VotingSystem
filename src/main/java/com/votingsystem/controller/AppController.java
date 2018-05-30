@@ -211,7 +211,8 @@ public class AppController {
 
     //Создание или обновление блюда
     @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createOrUpdateDish(@PathVariable("menu_id") int menu_id, @Valid Dish dish) {
+    public void createOrUpdateDish(@PathVariable("menu_id") int menu_id, @Valid DishTo dishTo) {
+        Dish dish = DishConverter.getDishFromTo(dishTo);
         dish.setMenu(menuService.getById(menu_id));
         dishService.save(dish);
     }

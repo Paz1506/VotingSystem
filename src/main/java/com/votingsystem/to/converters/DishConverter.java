@@ -13,7 +13,7 @@ public class DishConverter {
 
     //Get DishTo from Dish
     public static DishTo getToFromDish(Dish dish) {
-        return new DishTo(dish.getId(), dish.getName(), dish.getPrice(), dish.getMenu().getId());
+        return new DishTo(dish.getId(), dish.getName(), dish.getPrice());
     }
 
     //GetDish from TO (without Menu (-> set to AppController))

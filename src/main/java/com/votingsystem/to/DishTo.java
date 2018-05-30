@@ -15,11 +15,10 @@ import java.io.Serializable;
 
 public class DishTo extends RootTo implements Serializable {
 
-    public DishTo(Integer id, String name, Integer price, Integer menuId) {
+    public DishTo(Integer id, String name, Integer price) {
         super(id);
         this.name = name;
         this.price = price;
-        this.menuId = menuId;
     }
 
     @NotBlank
@@ -31,8 +30,6 @@ public class DishTo extends RootTo implements Serializable {
     @Range(min = 50, max = 10000, message = "value must between 50 and 10000")
     private Integer price;
 
-    @NotNull
-    private Integer menuId;
 
     public String getName() {
         return name;
@@ -50,20 +47,12 @@ public class DishTo extends RootTo implements Serializable {
         this.price = price;
     }
 
-    public Integer getMenuId() {
-        return menuId;
-    }
-
-    public void setMenuId(Integer menuId) {
-        this.menuId = menuId;
-    }
 
     @Override
     public String toString() {
         return "DishTo{" +
                 "name='" + name + '\'' +
                 ", price=" + price +
-                ", menuId=" + menuId +
                 ", id=" + id +
                 '}';
     }
