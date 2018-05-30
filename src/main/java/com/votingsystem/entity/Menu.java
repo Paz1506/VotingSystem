@@ -25,6 +25,7 @@ import java.util.List;
 public class Menu extends AbstractEntity {
 
     @Column(name = "name", nullable = false)
+    @NotNull
     @NotBlank
     @Size(min = 3, max = 100)
     private String name;
@@ -34,17 +35,17 @@ public class Menu extends AbstractEntity {
      */
     @Column(name = "date", nullable = false)
     @NotNull
-    //    @NotNull - TODO -сделать TO, иначе ошибка валидации
+//        @NotNull - TODO -сделать TO, иначе ошибка валидации
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime date;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "menu"/*, cascade = CascadeType.ALL, orphanRemoval = true*/)
-//    @NotNull - TODO -сделать TO, иначе ошибка валидации
+//    @NotNull //- TODO -сделать TO, иначе ошибка валидации
     private List<Dish> dishes;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    @JsonIgnore // else stackoverflow http://localhost:8080/v1.0/restaurants/1/menus
+//    @JsonIgnore // else stackoverflow http://localhost:8080/v1.0/restaurants/1/menus
     private Restaurant restaurant;
 
 

@@ -10,11 +10,11 @@ import javax.validation.constraints.Size;
 
 /**
  * ************************************
- * Сущность "Блюдо"
- * Поля:
- * - наименование (name)
- * - меню (сущность "Меню") -- Убрать?
- * - цена (price)
+ * Entity "Dish"
+ * Hierarchy:
+ * * Restaurant
+ * * \_ Menu
+ * * * \_Dish
  * ************************************
  */
 
@@ -29,14 +29,14 @@ public class Dish extends AbstractEntity {
     private String name;
 
     @Column(name = "price", nullable = false)
+    @NotNull
     @Range(min = 50, max = 10000)
     private Integer price;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id", nullable = false)
 //    @NotNull - TODO -сделать TO, иначе ошибка валидации
-    @JsonIgnore
+//    @JsonIgnore // в ТО сделать только айдишник меню
     private Menu menu;
 
     public String getName() {
@@ -68,7 +68,7 @@ public class Dish extends AbstractEntity {
         return "Dish{" +
                 "name='" + name + '\'' +
                 ", price=" + price +
-//                ", menu_id=" + menu.getId() +
+//                ", menu_id=" + menu.getId() + //Это сделать в ТО
                 ", id=" + id +
                 '}';
     }

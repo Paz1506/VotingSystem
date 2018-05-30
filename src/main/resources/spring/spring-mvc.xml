@@ -9,12 +9,9 @@
 
     <import resource="spring-security.xml"/>
 
-    <mvc:annotation-driven/>
-    <!--<mvc:annotation-driven conversion-service="conversionService">
+    <!--<mvc:annotation-driven/>-->
+    <mvc:annotation-driven conversion-service="conversionService">
         <mvc:message-converters>
-            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-                <property name="objectMapper" ref="objectMapper"/>
-            </bean>
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
                 <property name="supportedMediaTypes">
                     <list>
@@ -24,16 +21,17 @@
                 </property>
             </bean>
         </mvc:message-converters>
-    </mvc:annotation-driven>-->
+    </mvc:annotation-driven>
 
-    <!--<bean class="org.springframework.format.support.FormattingConversionServiceFactoryBean" id="conversionService">
+    <bean class="org.springframework.format.support.FormattingConversionServiceFactoryBean" id="conversionService">
         <property name="formatters">
             <set>
-                <bean class="ru.javawebinar.topjava.web.converter.DateTimeFormatters.LocalTimeFormatter"/>
-                <bean class="ru.javawebinar.topjava.web.converter.DateTimeFormatters.LocalDateFormatter"/>
+                <bean class="com.votingsystem.controller.json.DateTimeFormatters.LocalDateTimeFormatter"/>
+                <bean class="com.votingsystem.controller.json.DateTimeFormatters.LocalDateFormatter"/>
+                <bean class="com.votingsystem.controller.json.DateTimeFormatters.LocalTimeFormatter"/>
             </set>
         </property>
-    </bean>-->
+    </bean>
 
     <context:component-scan base-package="com.**.controller"/>
     <context:component-scan base-package="com.**.service"/>

@@ -6,6 +6,12 @@ import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 
+/**
+ * ************************************
+ * Root-class for all entities
+ * ************************************
+ */
+
 @MappedSuperclass
 @Access(AccessType.FIELD)
 public abstract class AbstractEntity implements Persistable<Integer> {
@@ -15,7 +21,6 @@ public abstract class AbstractEntity implements Persistable<Integer> {
     @Id
     @SequenceGenerator(name = "global_sequence", sequenceName = "global_sequence", allocationSize = 1, initialValue = BEGIN_SEQUENCE)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_sequence")
-
 //  See https://hibernate.atlassian.net/browse/HHH-3718 and https://hibernate.atlassian.net/browse/HHH-12034
 //  Proxy initialization when accessing its identifier managed now by JPA_PROXY_COMPLIANCE setting
     protected Integer id;
@@ -46,7 +51,6 @@ public abstract class AbstractEntity implements Persistable<Integer> {
     public String toString() {
         return String.format("Entity %s (%s)", getClass().getName(), id);
     }
-
 
     @Override
     public boolean equals(Object o) {

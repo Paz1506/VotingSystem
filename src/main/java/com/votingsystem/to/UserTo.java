@@ -1,20 +1,18 @@
 package com.votingsystem.to;
 
-import org.hibernate.validator.constraints.SafeHtml;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
  * ************************************
- * Transfer object for User
+ * Transfer object for User entity
  * ************************************
  */
-public class UserTo extends RootTo implements Serializable {
 
-    public UserTo(){}
+public class UserTo extends RootTo implements Serializable {
 
     public UserTo(Integer id, String name, String email, String password) {
         super(id);
@@ -24,18 +22,20 @@ public class UserTo extends RootTo implements Serializable {
     }
 
     @NotBlank
-    @Size(min = 3, max = 100)
+    @NotNull
+    @Size(min = 3, max = 100, message = "length must between 5 and 16 characters")
 //    @SafeHtml // https://stackoverflow.com/questions/17480809
     private String name;
 
     @Email
     @NotBlank
-    @Size(max = 100)
-//    @SafeHtml
+    @NotNull
+    @Size(max = 100, message = "length must < 100 characters")
     private String email;
 
+    @NotNull
     @NotBlank
-    @Size(min = 5, max = 32, message = "length must between 5 and 32 characters")
+    @Size(min = 5, max = 16, message = "length must between 5 and 16 characters")
     private String password;
 
     public String getName() {

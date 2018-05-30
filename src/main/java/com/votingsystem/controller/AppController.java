@@ -2,11 +2,16 @@ package com.votingsystem.controller;
 
 import com.votingsystem.entity.*;
 import com.votingsystem.service.*;
+import com.votingsystem.to.DishTo;
+import com.votingsystem.to.MenuTo;
 import com.votingsystem.to.UserTo;
+import com.votingsystem.to.converters.DishConverter;
+import com.votingsystem.to.converters.MenuConverter;
 import com.votingsystem.to.converters.UserConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +22,7 @@ import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Основной контроллер приложения
@@ -58,13 +64,21 @@ public class AppController {
     }
 
     //=========================================
-    //Работа временно тестирование Security
+    //Тестовые методы
     //=========================================
 
     //Если имеем доступ, увидим надпись
     @GetMapping(value = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getTestSecurity() {
         return "[{\"message\":\"Access allowed\"}]";
+    }
+
+    //Тест пинятия LocalDateTime
+    @PostMapping(value = "/date")
+    public void testLocalDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
+        System.out.println("Y : " + localDateTime.getYear());
+        System.out.println("M: " + localDateTime.getMonth());
+        System.out.println("D : " + localDateTime.getDayOfMonth());
     }
 
     //=========================================
@@ -145,21 +159,37 @@ public class AppController {
 
     //Вернет все меню ресторана за все даты
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Menu> getMenusByRestaurantId(@PathVariable("restaurant_id") int restaurant_id) {
-        return menuService.getByRestaurantId(restaurant_id);
+    public List<MenuTo> getMenusByRestaurantId(@PathVariable("restaurant_id") int restaurant_id) {
+        return menuService.getByRestaurantId(restaurant_id).stream().map(MenuConverter::getToFromMenu).collect(Collectors.toList());
     }
 
+    //TODO ошибка биндинга даты если принимаем ТО, если Entity, все нормально
     //Создание или обновление меню
-    @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createOrUpdateMenu(@PathVariable("restaurant_id") int restaurant_id, @Valid Menu menu) {
-        menu.setRestaurant(restaurantService.getById(restaurant_id));//TODO Сделать через Reference, чтобы не лезть в БД
+    @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL)
+    public void createOrUpdateMenu(@PathVariable("restaurant_id") int restaurant_id, @Valid MenuTo menuTo) {
+        System.out.println("!!!!!!!!!!!! " + menuTo);
+        Menu menu = MenuConverter.getMenuFromTo(menuTo);
+        menu.setRestaurant(restaurantService.getById(restaurant_id));
         menuService.save(menu);
     }
 
+    //Создание или обновление меню (Сделал через параметры)
+//    @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL)
+//    public void createOrUpdateMenu(
+//            @PathVariable("restaurant_id") int restaurant_id,
+//            @RequestParam("name") String name,
+//            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
+//        Menu menu = new Menu();
+//        menu.setName(name);
+//        menu.setDate(date);
+//        menu.setRestaurant(restaurantService.getById(restaurant_id));
+//        menuService.save(menu);
+//    }
+
     //Вернет меню по id
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Menu getMenuById(@PathVariable("menu_id") int menu_id) {
-        return menuService.getById(menu_id);
+    public MenuTo getMenuById(@PathVariable("menu_id") int menu_id) {
+        return MenuConverter.getToFromMenu(menuService.getById(menu_id));
     }
 
     //Удалит меню по id
@@ -173,9 +203,10 @@ public class AppController {
     //=========================================
 
     //вернет все блюда конкретного меню
+    //Переделал под ТО
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Dish> getDishesByMenuId(@PathVariable("menu_id") int menu_id) {
-        return dishService.getByMenuId(menu_id);
+    public List<DishTo> getDishesByMenuId(@PathVariable("menu_id") int menu_id) {
+        return dishService.getByMenuId(menu_id).stream().map(DishConverter::getToFromDish).collect(Collectors.toList());
     }
 
     //Создание или обновление блюда
@@ -187,8 +218,8 @@ public class AppController {
 
     //Вернет блюдо по id
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Dish getDishById(@PathVariable("dish_id") int dish_id) {
-        return dishService.getById(dish_id);
+    public DishTo getDishById(@PathVariable("dish_id") int dish_id) {
+        return DishConverter.getToFromDish(dishService.getById(dish_id));
     }
 
     //Удалит блюдо по id

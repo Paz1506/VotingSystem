@@ -1,6 +1,8 @@
 package com.votingsystem.to;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * ************************************
  * Базовый класс для всех TO
@@ -25,6 +27,7 @@ public abstract class RootTo {
         this.id = id;
     }
 
+    @JsonIgnore
     public boolean isNew() {
         return getId() == null;
     }
