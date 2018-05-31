@@ -9,8 +9,8 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            <!--TRUE -> classpath:spring/spring-mvc.xml-->
-            <!-- NOT TRUE -> --> classpath:spring/spring-mvc.xml
+            <!-- TRUE --> classpath:spring/spring-app.xml
+            <!-- NOT TRUE -> classpath:spring/spring-mvc.xml -->
             classpath:spring/spring-db.xml
         </param-value>
     </context-param>

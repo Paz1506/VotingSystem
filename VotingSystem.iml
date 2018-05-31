@@ -23,6 +23,7 @@
           <file>file://$MODULE_DIR$/src/main/webapp/WEB-INF/dispatcher-servlet.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/spring/spring-mvc.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/spring/spring-security.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/spring/spring-app.xml</file>
         </fileset>
       </configuration>
     </facet>
