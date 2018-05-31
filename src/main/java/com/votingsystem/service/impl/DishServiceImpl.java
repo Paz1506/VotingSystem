@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -45,5 +46,10 @@ public class DishServiceImpl implements DishService {
     @Override
     public List<Dish> getByMenuId(int id) {
         return dishRepository.findByMenuId(id);
+    }
+
+    @Override
+    public List<Dish> getOfMenuByCurrentDay(int id, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return dishRepository.findOfMenuByCurrentDay(id, startDateTime, endDateTime);
     }
 }

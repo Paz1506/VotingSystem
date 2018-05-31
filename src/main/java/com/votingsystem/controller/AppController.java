@@ -2,6 +2,7 @@ package com.votingsystem.controller;
 
 import com.votingsystem.entity.*;
 import com.votingsystem.exceptions.VotingTimeExpiredException;
+import com.votingsystem.security.AuthUser;
 import com.votingsystem.service.*;
 import com.votingsystem.to.DishTo;
 import com.votingsystem.to.MenuTo;
@@ -94,7 +95,8 @@ public class AppController {
 
     //USER: Вернет все рестораны за текущий день, в которых созданы меню
     //Если меню нет, ресторана просто не будет в списке
-    @GetMapping(value = RESTAURANTS_URL+"/day", produces = MediaType.APPLICATION_JSON_VALUE)
+    //TODO исправить маршрутизацию на пользовательскую
+    @GetMapping(value = RESTAURANTS_URL + "/day", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Restaurant> getAllRestaurantByCurrentDayWithMenu() {
 
         //Конструируем начало и конец текущего дня //TODO вынести в отдельный метод
@@ -139,20 +141,22 @@ public class AppController {
     public void createOrUpdateVote(@PathVariable("restaurant_id") int restaurant_id) throws VotingTimeExpiredException {
 
         //Пока сделать все проверки здесь
-        User current_user = userService.getById(16); // Захардкодил юзера 16 (в дальнейшем из секьюрити)
+//        User current_user = userService.getById(16); // Захардкодил юзера 16 (в дальнейшем из секьюрити)
+//        User current_user = userService.getById(AuthUser.get().getId());
+        User current_user = userService.getById(AuthUser.id());
 
         //Конструируем начало и конец текущего дня
         LocalDateTime beginCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
         LocalDateTime endCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
         //получаем текущее время
-        LocalTime current_time = LocalTime.now();//Production
-//        LocalTime current_time = LocalTime.of(12,0,0);//Fix it
+//        LocalTime current_time = LocalTime.now();//Production
+        LocalTime current_time = LocalTime.of(10,0,0);//TODO Fix it
 
         //Если текущее время меньше порогового для голосования
-        if (current_time.isBefore(tresholdTime)){
+        if (current_time.isBefore(tresholdTime)) {
             Vote voteOfUserByCurrentDay = voteService.getByUserIdAndDateTime(beginCurrentDay, endCurrentDay, 16);
-            if (voteOfUserByCurrentDay!=null){
+            if (voteOfUserByCurrentDay != null) {
                 voteService.delete(voteOfUserByCurrentDay.getId());
             } else {
 
@@ -175,14 +179,30 @@ public class AppController {
     //Вернет все меню ресторана за все даты
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MenuTo> getMenusByRestaurantId(@PathVariable("restaurant_id") int restaurant_id) {
-        return menuService.getByRestaurantId(restaurant_id).stream().map(MenuConverter::getToFromMenu).collect(Collectors.toList());
+        return menuService.getByRestaurantId(restaurant_id)
+                .stream()
+                .map(MenuConverter::getToFromMenu)
+                .collect(Collectors.toList());
     }
 
-    //TODO ошибка биндинга даты если принимаем ТО, если Entity, все нормально
+    //USER: Вернет все меню ресторана за текущий день
+    //TODO исправить маршрутизацию на пользовательскую
+    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/day", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<MenuTo> getAllMenusOfRestaurantByCurrentDay(@PathVariable("restaurant_id") int restaurant_id) {
+
+        //Конструируем начало и конец текущего дня //TODO вынести в отдельный метод
+        LocalDateTime beginCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+        LocalDateTime endCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+        return menuService.getAllMenusOfRestaurantByCurrentDay(restaurant_id, beginCurrentDay, endCurrentDay)
+                .stream()
+                .map(MenuConverter::getToFromMenu)
+                .collect(Collectors.toList());
+    }
+
     //Создание или обновление меню
     @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createOrUpdateMenu(@PathVariable("restaurant_id") int restaurant_id, @Valid MenuTo menuTo) {
-        System.out.println("!!!!!!!!!!!! " + menuTo);
         Menu menu = MenuConverter.getMenuFromTo(menuTo);
         menu.setRestaurant(restaurantService.getById(restaurant_id));
         menuService.save(menu);
@@ -218,10 +238,27 @@ public class AppController {
     //=========================================
 
     //вернет все блюда конкретного меню
-    //Переделал под ТО
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DishTo> getDishesByMenuId(@PathVariable("menu_id") int menu_id) {
-        return dishService.getByMenuId(menu_id).stream().map(DishConverter::getToFromDish).collect(Collectors.toList());
+        return dishService.getByMenuId(menu_id)
+                .stream()
+                .map(DishConverter::getToFromDish)
+                .collect(Collectors.toList());
+    }
+
+    //USER: Вернет все блюда в меню за текущий день
+    //TODO исправить маршрутизацию на пользовательскую
+    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/day", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<DishTo> getDishesOfMenuByCurrentDay(@PathVariable("menu_id") int menu_id) {
+        //Конструируем начало и конец текущего дня //TODO вынести в отдельный метод
+
+        LocalDateTime beginCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+        LocalDateTime endCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+        return dishService.getOfMenuByCurrentDay(menu_id, beginCurrentDay, endCurrentDay)
+                .stream()
+                .map(DishConverter::getToFromDish)
+                .collect(Collectors.toList());
     }
 
     //Создание или обновление блюда

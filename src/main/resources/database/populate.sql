@@ -29,7 +29,8 @@ INSERT INTO dish (id, name, price, menu_id) VALUES
   (12, 'dish_3', 2000, 6),
   (13, 'dish_4', 2500, 7),
   (14, 'dish_5', 3000, 8),
-  (15, 'dish_6', 3500, 9);
+  (15, 'dish_6', 3500, 9),
+  (979, 'dish_7', 3500, 977); --For test getDishesOfMenuByCurrentDay()
 
 INSERT INTO users (id, name, email, password) VALUES
   (16, 'User', 'user@yandex.ru', '1234'),

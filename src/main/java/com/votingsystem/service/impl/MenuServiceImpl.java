@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -46,5 +47,10 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<Menu> getByRestaurantId(int id) {
         return menuRepository.findByRestaurantId(id);
+    }
+
+    @Override
+    public List<Menu> getAllMenusOfRestaurantByCurrentDay(int restaurant_id, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return menuRepository.findAllMenusOfRestaurantByCurrentDay(restaurant_id, startDateTime, endDateTime);
     }
 }
