@@ -12,7 +12,7 @@
         <http-basic/>
         <csrf disabled="true"/><!--Подсвечивается, но работает-->
         <intercept-url pattern="/v1.0/admin/**" access="hasRole('ROLE_ADMIN')"/>
-        <intercept-url pattern="/**" access="permitAll()"/>
+        <intercept-url pattern="/**" access="isAuthenticated()"/>
         <!--<intercept-url pattern="/**" access="isAuthenticated()"/>-->
     </http>
 

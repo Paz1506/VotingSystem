@@ -21,9 +21,7 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +37,7 @@ import java.util.stream.Collectors;
 @RequestMapping(value = AppController.ROOT_VERSION_URL)
 public class AppController {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     final static String ROOT_VERSION_URL = "/v1.0";
     final static String RESTAURANTS_URL = "/restaurants";
@@ -47,6 +45,7 @@ public class AppController {
     final static String DISHES_URL = "/dishes";
     final static String VOTES_URL = "/votes";
     final static String USERS_URL = "/users";
+    final static String ADMIN = "/admin";
 
     private final static LocalTime tresholdTime = LocalTime.of(11, 0, 0);
 
@@ -70,8 +69,9 @@ public class AppController {
     //=========================================
 
     //Если имеем доступ, увидим надпись
-    @GetMapping(value = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN, produces = MediaType.APPLICATION_JSON_VALUE)
     public String getTestSecurity() {
+        log.info("Test security for user {}", AuthUser.id());
         return "[{\"message\":\"Access allowed\"}]";
     }
 
@@ -88,16 +88,19 @@ public class AppController {
     //=========================================
 
     //Вернет все рестораны
-    @GetMapping(value = RESTAURANTS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN + RESTAURANTS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Restaurant> getAllRestaurants() {
+        log.info("User {} get list restaurants", AuthUser.id());
         return restaurantService.getAll();
     }
 
     //USER: Вернет все рестораны за текущий день, в которых созданы меню
     //Если меню нет, ресторана просто не будет в списке
     //TODO исправить маршрутизацию на пользовательскую
-    @GetMapping(value = RESTAURANTS_URL + "/day", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = RESTAURANTS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Restaurant> getAllRestaurantByCurrentDayWithMenu() {
+
+        log.info("User {} get list restaurants by current day", AuthUser.id());
 
         //Конструируем начало и конец текущего дня //TODO вынести в отдельный метод
         LocalDateTime beginCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
@@ -107,32 +110,41 @@ public class AppController {
     }
 
     //Создание или обновление ресторана
-    @PostMapping(value = RESTAURANTS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = ADMIN + RESTAURANTS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createOrUpdateRestaurant(@Valid Restaurant restaurant) {
+
+        log.info("User {} create/update restaurant {}", AuthUser.id(), restaurant);
+
         restaurantService.save(restaurant);
     }
 
     //Вернет ресторан по id
-    @GetMapping(value = RESTAURANTS_URL + "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = {RESTAURANTS_URL + "/{id}", ADMIN + RESTAURANTS_URL + "/{id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public Restaurant getRestaurantById(@PathVariable("id") int id) {
+
+        log.info("User {} get restaurant {}", AuthUser.id(), id);
+
         return restaurantService.getById(id);
     }
 
     //Удалит ресторан по id
-    @DeleteMapping(value = RESTAURANTS_URL + "/{id}")
+    @DeleteMapping(value = ADMIN + RESTAURANTS_URL + "/{id}")
     public void deleteRestaurantById(@PathVariable("id") int id) {
+        log.info("User {} delete restaurant {}", AuthUser.id(), id);
         restaurantService.delete(id);
     }
 
     //Голоса за ресторан (за все даты, любыми пользователями)
-    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Vote> getRestaurantVotesById(@PathVariable("restaurant_id") int restaurant_id) {
+        log.info("User {} get restaurant {} votes", AuthUser.id(), restaurant_id);
         return voteService.getByRestaurantId(restaurant_id);
     }
 
     //Вернет голос ресторана по id
-    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL + "/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL + "/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Vote getRestaurantVoteById(@PathVariable("vote_id") int vote_id) {
+        log.info("User {} get vote {}", AuthUser.id(), vote_id);
         return voteService.getById(vote_id);
     }
 
@@ -151,15 +163,16 @@ public class AppController {
 
         //получаем текущее время
 //        LocalTime current_time = LocalTime.now();//Production
-        LocalTime current_time = LocalTime.of(10,0,0);//TODO Fix it
+        LocalTime current_time = LocalTime.of(10, 0, 0);//TODO Fix it
 
         //Если текущее время меньше порогового для голосования
         if (current_time.isBefore(tresholdTime)) {
             Vote voteOfUserByCurrentDay = voteService.getByUserIdAndDateTime(beginCurrentDay, endCurrentDay, 16);
             if (voteOfUserByCurrentDay != null) {
+                log.info("User {} cancel vote for restaurant {}", AuthUser.id(), restaurant_id);
                 voteService.delete(voteOfUserByCurrentDay.getId());
             } else {
-
+                log.info("User {} voting for restaurant {}", AuthUser.id(), restaurant_id);
                 Vote vote = new Vote();
                 vote.setDateTime(LocalDateTime.now());
                 vote.setRestaurant(restaurantService.getById(restaurant_id));
@@ -168,6 +181,7 @@ public class AppController {
                 voteService.save(vote);
             }
         } else {
+            log.info("User {} trying to vote after 11:00 for restaurant {}", AuthUser.id(), restaurant_id);
             throw new VotingTimeExpiredException();
         }
     }
@@ -177,8 +191,9 @@ public class AppController {
     //=========================================
 
     //Вернет все меню ресторана за все даты
-    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MenuTo> getMenusByRestaurantId(@PathVariable("restaurant_id") int restaurant_id) {
+        log.info("User {} get list menus for restaurant {}", AuthUser.id(), restaurant_id);
         return menuService.getByRestaurantId(restaurant_id)
                 .stream()
                 .map(MenuConverter::getToFromMenu)
@@ -186,9 +201,10 @@ public class AppController {
     }
 
     //USER: Вернет все меню ресторана за текущий день
-    //TODO исправить маршрутизацию на пользовательскую
-    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/day", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MenuTo> getAllMenusOfRestaurantByCurrentDay(@PathVariable("restaurant_id") int restaurant_id) {
+
+        log.info("User {} get list menus for restaurant {} by current day", AuthUser.id(), restaurant_id);
 
         //Конструируем начало и конец текущего дня //TODO вынести в отдельный метод
         LocalDateTime beginCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
@@ -201,8 +217,11 @@ public class AppController {
     }
 
     //Создание или обновление меню
-    @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createOrUpdateMenu(@PathVariable("restaurant_id") int restaurant_id, @Valid MenuTo menuTo) {
+
+        log.info("User {} create/update menu {} for restaurant {}", AuthUser.id(), menuTo, restaurant_id);
+
         Menu menu = MenuConverter.getMenuFromTo(menuTo);
         menu.setRestaurant(restaurantService.getById(restaurant_id));
         menuService.save(menu);
@@ -222,15 +241,17 @@ public class AppController {
 //    }
 
     //Вернет меню по id
-    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = {RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}", ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public MenuTo getMenuById(@PathVariable("menu_id") int menu_id) {
+        log.info("User {} get menu {}", AuthUser.id(), menu_id);
         return MenuConverter.getToFromMenu(menuService.getById(menu_id));
     }
 
     //Удалит меню по id
-    @DeleteMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}")
-    public void deleteMenuById(@PathVariable("menu_id") int id) {
-        menuService.delete(id);
+    @DeleteMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}")
+    public void deleteMenuById(@PathVariable("menu_id") int menu_id) {
+        log.info("User {} delete menu {}", AuthUser.id(), menu_id);
+        menuService.delete(menu_id);
     }
 
     //=========================================
@@ -238,7 +259,7 @@ public class AppController {
     //=========================================
 
     //вернет все блюда конкретного меню
-    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DishTo> getDishesByMenuId(@PathVariable("menu_id") int menu_id) {
         return dishService.getByMenuId(menu_id)
                 .stream()
@@ -248,9 +269,11 @@ public class AppController {
 
     //USER: Вернет все блюда в меню за текущий день
     //TODO исправить маршрутизацию на пользовательскую
-    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/day", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DishTo> getDishesOfMenuByCurrentDay(@PathVariable("menu_id") int menu_id) {
         //Конструируем начало и конец текущего дня //TODO вынести в отдельный метод
+
+        log.info("User {} get list dishes of menu {} by current day", AuthUser.id(), menu_id);
 
         LocalDateTime beginCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
         LocalDateTime endCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
@@ -262,23 +285,26 @@ public class AppController {
     }
 
     //Создание или обновление блюда
-    @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createOrUpdateDish(@PathVariable("menu_id") int menu_id, @Valid DishTo dishTo) {
+        log.info("User {} create/update dish {} of menu {}", AuthUser.id(), dishTo, menu_id);
         Dish dish = DishConverter.getDishFromTo(dishTo);
         dish.setMenu(menuService.getById(menu_id));
         dishService.save(dish);
     }
 
     //Вернет блюдо по id
-    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = {RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}", ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public DishTo getDishById(@PathVariable("dish_id") int dish_id) {
+        log.info("User {} get dish {}", AuthUser.id(), dish_id);
         return DishConverter.getToFromDish(dishService.getById(dish_id));
     }
 
     //Удалит блюдо по id
-    @DeleteMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}")
-    public void deleteDishById(@PathVariable("dish_id") int id) {
-        dishService.delete(id);
+    @DeleteMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}")
+    public void deleteDishById(@PathVariable("dish_id") int dish_id) {
+        log.info("User {} delete dish {}", AuthUser.id(), dish_id);
+        dishService.delete(dish_id);
     }
 
     //=========================================
@@ -286,8 +312,9 @@ public class AppController {
     //=========================================
 
     //Вернет всех пользователей
-    @GetMapping(value = USERS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN + USERS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<User> getAllUsers() {
+        log.info("User {} get list users", AuthUser.id());
         return userService.getAll();
     }
 
@@ -302,33 +329,38 @@ public class AppController {
 //    }
 
     //Создание или обновление пользователя
-    @PostMapping(value = USERS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = ADMIN + USERS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createOrUpdateUser(@Valid UserTo userTo) {
+        log.info("User {} create/update user {}", AuthUser.id(), userTo);
         userService.save(UserConverter.getUserFromTo(userTo));
     }
 
 
     //Вернет пользователя по id
-    @GetMapping(value = USERS_URL + "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN + USERS_URL + "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public User getUserById(@PathVariable("user_id") int user_id) {
+        log.info("User {} get user {}", AuthUser.id(), user_id);
         return userService.getById(user_id);
     }
 
     //Удалит пользователя по id
-    @DeleteMapping(value = USERS_URL + "/{user_id}")
+    @DeleteMapping(value = ADMIN + USERS_URL + "/{user_id}")
     public void deleteUserById(@PathVariable("user_id") int user_id) {
+        log.info("User {} delete user {}", AuthUser.id(), user_id);
         userService.delete(user_id);
     }
 
     //Вернет голоса конкретного пользователя за все время
-    @GetMapping(value = USERS_URL + "/{user_id}" + VOTES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN + USERS_URL + "/{user_id}" + VOTES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Vote> getVotesByUser(@PathVariable("user_id") int user_id) {
+        log.info("User {} get list votes with user {}", AuthUser.id(), user_id);
         return voteService.getByUserId(user_id);
     }
 
     //Вернет голос пользователя по id
-    @GetMapping(value = USERS_URL + "/{user_id}" + VOTES_URL + "/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = ADMIN + USERS_URL + "/{user_id}" + VOTES_URL + "/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Vote getUserVoteById(@PathVariable("vote_id") int vote_id) {
+        log.info("User {} get vote {}", AuthUser.id(), vote_id);
         return voteService.getById(vote_id);
     }
 
