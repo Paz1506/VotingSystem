@@ -1,6 +1,8 @@
 package com.votingsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
@@ -19,6 +21,8 @@ import javax.validation.constraints.Size;
  */
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "dish")
 public class Dish extends AbstractEntity {
 
