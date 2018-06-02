@@ -14,6 +14,10 @@
 
     <context:property-placeholder location="classpath:database/hsqldb.properties" system-properties-mode="OVERRIDE"/>
 
+    <context:component-scan base-package="com.**.repository"/>
+    <context:component-scan base-package="com.**.votingsystem.service"/><!--Переделать как выше и проверить-->
+    <jpa:repositories base-package="com.**.repository"/>
+
     <jdbc:initialize-database data-source="dataSource" enabled="${database.init}">
         <jdbc:script location="classpath:database/init.sql"/>
         <jdbc:script location="classpath:database/populate.sql"/><!--Fix it!-->
@@ -26,30 +30,25 @@
           p:username="${database.username}"
           p:password="${database.password}"/>
 
-    <!-- Transaction manager for a single JPA EntityManagerFactory (alternative to JTA) -->
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
-          p:entityManagerFactory-ref="entityManagerFactory"/>
-
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
           p:dataSource-ref="dataSource"
-          p:packagesToScan="com.**.entity">
-        <!--p:persistenceUnitName="persistenceUnit">-->
+          p:packagesToScan="com.**.entity"
+          p:persistenceUnitName="persistenceUnit">
 
-        <!--<property name="jpaPropertyMap">
+        <!--Caching 6_3-->
+        <property name="jpaPropertyMap">
             <map>
-                <entry key="#{T(org.hibernate.cfg.AvailableSettings).FORMAT_SQL}" value="true"/>
+                <!--<entry key="#{T(org.hibernate.cfg.AvailableSettings).FORMAT_SQL}" value="true"/>
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SQL_COMMENTS}"
-                       value="${hibernate.use_sql_comments}"/>
+                       value="${hibernate.use_sql_comments}"/>-->
 
-                &lt;!&ndash;https://github.com/hibernate/hibernate-orm/blob/master/documentation/src/main/asciidoc/userguide/chapters/caching/Caching.adoc#caching-provider-jcache&ndash;&gt;
-                <entry key="#{T(org.hibernate.cfg.AvailableSettings).CACHE_REGION_FACTORY}"
-                       value="org.hibernate.cache.jcache.JCacheRegionFactory"/>
-                <entry key="#{T(org.hibernate.cache.jcache.JCacheRegionFactory).PROVIDER}"
-                       value="org.ehcache.jsr107.EhcacheCachingProvider"/>
+                <!--https://github.com/hibernate/hibernate-orm/blob/master/documentation/src/main/asciidoc/userguide/chapters/caching/Caching.adoc#caching-provider-jcache-->
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).CACHE_REGION_FACTORY}" value="org.hibernate.cache.jcache.JCacheRegionFactory"/>
+                <entry key="#{T(org.hibernate.cache.jcache.JCacheRegionFactory).PROVIDER}" value="org.ehcache.jsr107.EhcacheCachingProvider"/>
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SECOND_LEVEL_CACHE}" value="true"/>
-                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_QUERY_CACHE}" value="false"/> &lt;!&ndash;default&ndash;&gt;
+                <!--<entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_QUERY_CACHE}" value="false"/> &lt;!&ndash;default&ndash;&gt;-->
             </map>
-        </property>-->
+        </property>
 
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
@@ -58,8 +57,10 @@
         </property>
     </bean>
 
-    <context:component-scan base-package="com.**.repository"/>
-    <context:component-scan base-package="com.**.votingsystem.service"/><!--Переделать как выше и проверить-->
-    <jpa:repositories base-package="com.**.repository"/>
+    <!-- Transaction manager for a single JPA EntityManagerFactory (alternative to JTA) -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
+          p:entityManagerFactory-ref="entityManagerFactory"/>
+
+    <bean class="com.votingsystem.repository.HibernateUtil"/>
 
 </beans>

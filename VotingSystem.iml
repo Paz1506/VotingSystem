@@ -24,6 +24,7 @@
           <file>file://$MODULE_DIR$/src/main/resources/spring/spring-mvc.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/spring/spring-security.xml</file>
           <file>file://$MODULE_DIR$/src/main/resources/spring/spring-app.xml</file>
+          <file>file://$MODULE_DIR$/src/main/resources/spring/spring-cache.xml</file>
         </fileset>
       </configuration>
     </facet>
@@ -83,6 +84,7 @@
     <orderEntry type="library" name="Maven: org.hibernate.common:hibernate-commons-annotations:5.0.1.Final" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate.validator:hibernate-validator:6.0.8.Final" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:2.0.1.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.hibernate:hibernate-jcache:5.2.16.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.glassfish:javax.el:3.0.1-b10" level="project" />
     <orderEntry type="library" name="Maven: javax.cache:cache-api:1.0.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.ehcache:ehcache:3.5.2" level="project" />

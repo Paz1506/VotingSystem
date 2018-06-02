@@ -17,4 +17,7 @@ public interface VoteRepository extends JpaRepository<Vote, Integer> {
     @Query("SELECT v FROM Vote v JOIN FETCH v.user WHERE v.user.id=:user_id AND v.dateTime BETWEEN :startDateTime AND :endDateTime")
     Vote findByUserIdAndDateTime(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("user_id") int userId);
 
+    @Query("SELECT COUNT (v.id) FROM Vote v WHERE v.restaurant.id=:restaurant_id AND v.dateTime BETWEEN :startDateTime AND :endDateTime")
+    int findCountByRestaurantId(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("restaurant_id") int restaurant_id);
+
 }

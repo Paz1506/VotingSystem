@@ -96,7 +96,6 @@ public class AppController {
 
     //USER: Вернет все рестораны за текущий день, в которых созданы меню
     //Если меню нет, ресторана просто не будет в списке
-    //TODO исправить маршрутизацию на пользовательскую
     @GetMapping(value = RESTAURANTS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Restaurant> getAllRestaurantByCurrentDayWithMenu() {
 
@@ -141,6 +140,46 @@ public class AppController {
         return voteService.getByRestaurantId(restaurant_id);
     }
 
+    //USER:Вернет количество голосов за конкретный ресторан (за текущий день!)
+    @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL + "/count", produces = MediaType.APPLICATION_JSON_VALUE)
+    public int getCountRestaurantVotesById(@PathVariable("restaurant_id") int restaurant_id) {
+
+        //получаем текущее время
+        LocalTime current_time = LocalTime.now();//Production
+//        LocalTime current_time = LocalTime.of(12, 0, 0);//TODO Fix it
+
+        if (current_time.isAfter(tresholdTime)) {
+            log.info("User {} get restaurant {} count votes for current day", AuthUser.id(), restaurant_id);
+            //Конструируем начало и конец текущего дня //TODO вынести в отдельный метод
+            LocalDateTime beginCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+            LocalDateTime endCurrentDay = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+            return voteService.getCountByRestaurantId(beginCurrentDay, endCurrentDay, restaurant_id);
+        } else {
+            return -1;
+        }
+    }
+
+    //ADMIN:Вернет количество голосов за конкретный ресторан (за текущий день!)
+    @GetMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL + "/count", produces = MediaType.APPLICATION_JSON_VALUE)
+    public int getAllCountRestaurantVotesById(
+            @PathVariable("restaurant_id") int restaurant_id,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            @RequestParam(value = "startTime", required = false) LocalTime startTime,
+            @RequestParam(value = "endTime", required = false) LocalTime endTime
+    ) {
+
+        //TODO сделать отдельный метод в DateTimeUtil
+        //Конструируем временные промежутки, если заданы параметры,иначе текущий день
+        LocalDateTime beginCurrentDay = LocalDateTime.of(startDate != null ? startDate : LocalDate.now(), startTime != null ? startTime : LocalTime.of(0, 0, 0));
+        LocalDateTime endCurrentDay = LocalDateTime.of(endDate != null ? endDate : LocalDate.now(), endTime != null ? endTime : LocalTime.of(23, 59, 59));
+
+        log.info("User {} get restaurant {} count votes between {} {} and {} {}", AuthUser.id(), restaurant_id, startDate, startTime, endDate, endTime);
+
+        return voteService.getCountByRestaurantId(beginCurrentDay, endCurrentDay, restaurant_id);
+
+    }
+
     //Вернет голос ресторана по id
     @GetMapping(value = ADMIN + RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL + "/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public Vote getRestaurantVoteById(@PathVariable("vote_id") int vote_id) {
@@ -148,7 +187,7 @@ public class AppController {
         return voteService.getById(vote_id);
     }
 
-    //Голосование пользователя за ресторан TODO прикрутить секьюрити
+    //Голосование пользователя за ресторан
     @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL/*, consumes = MediaType.APPLICATION_JSON_VALUE*/)
     public void createOrUpdateVote(@PathVariable("restaurant_id") int restaurant_id) throws VotingTimeExpiredException {
 
@@ -167,12 +206,12 @@ public class AppController {
 
         //Если текущее время меньше порогового для голосования
         if (current_time.isBefore(tresholdTime)) {
-            Vote voteOfUserByCurrentDay = voteService.getByUserIdAndDateTime(beginCurrentDay, endCurrentDay, 16);
+            Vote voteOfUserByCurrentDay = voteService.getByUserIdAndDateTime(beginCurrentDay, endCurrentDay, current_user.getId());
             if (voteOfUserByCurrentDay != null) {
-                log.info("User {} cancel vote for restaurant {}", AuthUser.id(), restaurant_id);
+                log.info("User {} cancel vote for restaurant {}", current_user.getId(), restaurant_id);
                 voteService.delete(voteOfUserByCurrentDay.getId());
             } else {
-                log.info("User {} voting for restaurant {}", AuthUser.id(), restaurant_id);
+                log.info("User {} voting for restaurant {}", current_user.getId(), restaurant_id);
                 Vote vote = new Vote();
                 vote.setDateTime(LocalDateTime.now());
                 vote.setRestaurant(restaurantService.getById(restaurant_id));
@@ -268,7 +307,6 @@ public class AppController {
     }
 
     //USER: Вернет все блюда в меню за текущий день
-    //TODO исправить маршрутизацию на пользовательскую
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DishTo> getDishesOfMenuByCurrentDay(@PathVariable("menu_id") int menu_id) {
         //Конструируем начало и конец текущего дня //TODO вынести в отдельный метод
@@ -318,23 +356,12 @@ public class AppController {
         return userService.getAll();
     }
 
-//    //Создание или обновление пользователя
-//    @PostMapping(value = USERS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public void createOrUpdateUser(@Valid User user) {
-//        //TODO будет тоько обычный пользователь (@JsonIgnore roles). Исправить через ТО
-//        Set<Role> roles = new HashSet<>();
-//        roles.add(Role.ROLE_USER);
-//        user.setRoles(roles);
-//        userService.save(user);
-//    }
-
     //Создание или обновление пользователя
     @PostMapping(value = ADMIN + USERS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void createOrUpdateUser(@Valid UserTo userTo) {
         log.info("User {} create/update user {}", AuthUser.id(), userTo);
         userService.save(UserConverter.getUserFromTo(userTo));
     }
-
 
     //Вернет пользователя по id
     @GetMapping(value = ADMIN + USERS_URL + "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)

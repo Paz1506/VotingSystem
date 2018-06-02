@@ -57,4 +57,9 @@ public class VoteServiceImpl implements VoteService {
     public Vote getByUserIdAndDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         return voteRepository.findByUserIdAndDateTime(startDateTime, endDateTime, userId);
     }
+
+    @Override
+    public int getCountByRestaurantId(LocalDateTime beginCurrentDay, LocalDateTime endCurrentDay, int restaurant_id) {
+        return voteRepository.findCountByRestaurantId(beginCurrentDay, endCurrentDay, restaurant_id);
+    }
 }
