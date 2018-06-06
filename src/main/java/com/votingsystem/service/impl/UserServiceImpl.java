@@ -5,6 +5,8 @@ import com.votingsystem.repository.UserRepository;
 import com.votingsystem.security.AuthUser;
 import com.votingsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Cacheable("users")
     public List<User> getAll() {
         return userRepository.findAll();
     }
@@ -43,12 +46,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public User save(User user) {
         return userRepository.saveAndFlush(user);
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public void delete(int id) {
         userRepository.deleteById(id);
     }

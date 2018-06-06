@@ -14,10 +14,6 @@ import javax.validation.constraints.Size;
  * Restaurant entity.
  */
 
-//@NamedQueries({
-//        @NamedQuery(name = Restaurant.ALL, query = "SELECT r FROM Restaurant r")
-//})
-
 @Entity
 @Table(name = "restaurant")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -47,7 +43,4 @@ public class Restaurant extends AbstractEntity {
     public void setName(String name) {
         this.name = name;
     }
-
-    /*@OneToMany(mappedBy = "menu")
-    private List<Menu> menus;*/
 }

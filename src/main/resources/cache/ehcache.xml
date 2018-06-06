@@ -21,4 +21,5 @@
     </ehcache:cache-template>
 
     <ehcache:cache alias="restaurants" uses-template="singleNonExpiryCache"/>
+    <ehcache:cache alias="users" uses-template="singleNonExpiryCache"/>
 </ehcache:config>

@@ -78,7 +78,6 @@ public class User extends AbstractEntity {
     @NotNull
     private Date registered = new Date();
 
-    //    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) //(EXCEPTION ON START APP! WTF?)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "role", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
