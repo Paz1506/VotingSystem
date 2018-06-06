@@ -7,9 +7,8 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
- * ************************************
- * Transfer object for User entity
- * ************************************
+ * @author Paz1506
+ * Transfer object for User entity.
  */
 
 public class UserTo extends RootTo implements Serializable {
@@ -24,7 +23,6 @@ public class UserTo extends RootTo implements Serializable {
     @NotBlank
     @NotNull
     @Size(min = 3, max = 100, message = "length must between 5 and 16 characters")
-//    @SafeHtml // https://stackoverflow.com/questions/17480809
     private String name;
 
     @Email

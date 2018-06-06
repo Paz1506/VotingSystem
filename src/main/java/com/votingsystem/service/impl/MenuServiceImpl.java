@@ -4,7 +4,6 @@ import com.votingsystem.entity.Menu;
 import com.votingsystem.repository.MenuRepository;
 import com.votingsystem.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +32,14 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    public Menu getByIdAndRestaurantId(int id, int restaurant_id) {
+        return menuRepository.findByIdAndRestaurantId(id, restaurant_id);
+    }
+
+    @Override
     @Transactional
     public Menu save(Menu menu) {
-         return menuRepository.saveAndFlush(menu);
+        return menuRepository.saveAndFlush(menu);
     }
 
     @Override

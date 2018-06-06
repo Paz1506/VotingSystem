@@ -12,6 +12,8 @@ public interface MenuRepository extends JpaRepository<Menu, Integer> {
 
     List<Menu> findByRestaurantId(@Param("restaurant_id") Integer id);
 
+    Menu findByIdAndRestaurantId(@Param("id") Integer id, @Param("restaurant_id") Integer restaurant_id);
+
     @Query("SELECT m FROM Menu m where m.restaurant.id=:restaurant_id AND m.date BETWEEN :startDateTime AND :endDateTime")
     List<Menu> findAllMenusOfRestaurantByCurrentDay(@Param("restaurant_id") int restaurant_id, @Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime);
 }

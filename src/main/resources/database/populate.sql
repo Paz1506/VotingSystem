@@ -1,9 +1,9 @@
 DELETE FROM dish;
 DELETE FROM menu;
-DELETE FROM restaurant;
-DELETE FROM vote;
 DELETE FROM role;
+DELETE FROM vote;
 DELETE FROM users;
+DELETE FROM restaurant;
 
 ALTER SEQUENCE GLOBAL_SEQUENCE
 RESTART WITH 10000;
@@ -47,5 +47,5 @@ INSERT INTO role (user_id, role) VALUES
 INSERT INTO vote (id, date_time, user_id, restaurant_id) VALUES
   (23, '2018-05-19 10:00:00', 19, 1),
   (24, '2018-05-22 10:00:00', 19, 2),
-  (25, '2018-05-21 10:00:00', 19, 2),
+  (25, '2018-05-21 10:01:00', 19, 2),
   (26, now(), 19, 3);

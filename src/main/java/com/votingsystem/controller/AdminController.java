@@ -39,9 +39,7 @@ public class AdminController extends RootController {
         super(restaurantService, menuService, dishService, voteService, userService);
     }
 
-    /*=================================
-      Работа с ресторанами
-      ================================*/
+    //restaurants
 
     /**
      * Возвращает все рестораны.
@@ -88,9 +86,7 @@ public class AdminController extends RootController {
         restaurantService.delete(restaurant_id);
     }
 
-    /*=================================
-      Работа с меню
-      ================================*/
+    //menus
 
     /**
      * Возвращает все меню ресторана. //TODO Сделать фильтрацию по параметрам
@@ -144,9 +140,7 @@ public class AdminController extends RootController {
         menuService.delete(menu_id);
     }
 
-    /*=================================
-      Работа с блюдами
-      ================================*/
+    //dishes
 
     /**
      * Возвращает все блюда в меню.
@@ -199,9 +193,7 @@ public class AdminController extends RootController {
         dishService.delete(dish_id);
     }
 
-    /*=================================
-      Работа с пользователями
-      ================================*/
+    //users
 
     /**
      * Возвращает всех пользователей.
@@ -248,9 +240,7 @@ public class AdminController extends RootController {
         userService.delete(user_id);
     }
 
-    /*=================================
-      Работа с голосами
-      ================================*/
+    //votes
 
     /**
      * Возвращает голоса пользователя за все время.
@@ -310,29 +300,22 @@ public class AdminController extends RootController {
     ) {
         log.info("User {} get restaurant {} count votes between {} {} and {} {}", AuthUser.id(), restaurant_id, startDate, startTime, endDate, endTime);
         return voteService.getCountByRestaurantId(safeBeginCurrentDay(startDate, startTime), safeEndCurrentDay(endDate, endTime), restaurant_id);
-//        return voteService.getCountByRestaurantId(beginCurrentDay, endCurrentDay, restaurant_id);
-
     }
 
+    //tests (will be removed)
 
-    //=========================================
-    //Тестовые методы
-    //=========================================
-
-    //Если имеем доступ, увидим надпись
+    //test string
     @GetMapping(value = ADMIN, produces = MediaType.APPLICATION_JSON_VALUE)
     public String getTestSecurity() {
         log.info("Test security for user {}", AuthUser.id());
         return "[{\"message\":\"Access allowed\"}]";
     }
 
-    //Тест пинятия LocalDateTime
+    //print data in console
     @PostMapping(value = "/date")
     public void testLocalDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
         System.out.println("Y : " + localDateTime.getYear());
         System.out.println("M: " + localDateTime.getMonth());
         System.out.println("D : " + localDateTime.getDayOfMonth());
     }
-
-
 }

@@ -1,6 +1,5 @@
 package com.votingsystem.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Range;
@@ -11,13 +10,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * ************************************
- * Entity "Dish"
- * Hierarchy:
- * * Restaurant
- * * \_ Menu
- * * * \_Dish
- * ************************************
+ * @author Paz1506
+ * Dish entity.
  */
 
 @Entity
@@ -25,6 +19,22 @@ import javax.validation.constraints.Size;
 @DynamicUpdate
 @Table(name = "dish")
 public class Dish extends AbstractEntity {
+
+    public Dish() {
+    }
+
+    public Dish(String name, Integer price, Menu menu) {
+        this.name = name;
+        this.price = price;
+        this.menu = menu;
+    }
+
+    public Dish(Integer id, String name, Integer price, Menu menu) {
+        super(id);
+        this.name = name;
+        this.price = price;
+        this.menu = menu;
+    }
 
     @Column(name = "name", nullable = false)
     @NotBlank

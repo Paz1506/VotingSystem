@@ -1,6 +1,5 @@
 package com.votingsystem.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -11,18 +10,31 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * ************************************
- * Сущность "Меню"
- * Поля:
- * - дата (date)
- * - список блюд dishes (сущность "Блюдо") -- Убрать?
- * - ресторан (сущность "Ресторан") -- Убрать?
- * ************************************
+ * @author Paz1506
+ * Menu entity.
  */
 
 @Entity
 @Table(name = "menu")
 public class Menu extends AbstractEntity {
+
+    public Menu() {
+    }
+
+    public Menu(String name, LocalDateTime date, List<Dish> dishes, Restaurant restaurant) {
+        this.name = name;
+        this.date = date;
+        this.dishes = dishes;
+        this.restaurant = restaurant;
+    }
+
+    public Menu(Integer id, String name, LocalDateTime date, List<Dish> dishes, Restaurant restaurant) {
+        super(id);
+        this.name = name;
+        this.date = date;
+        this.dishes = dishes;
+        this.restaurant = restaurant;
+    }
 
     @Column(name = "name", nullable = false)
     @NotNull

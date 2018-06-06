@@ -9,9 +9,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * ************************************
- * Transfer object for Menu entity
- * ************************************
+ * @author Paz1506
+ * Transfer object for Menu entity.
  */
 
 public class MenuTo extends RootTo implements Serializable {
@@ -31,7 +30,6 @@ public class MenuTo extends RootTo implements Serializable {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 //    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime date;
-
 
 
     public LocalDateTime getDate() {

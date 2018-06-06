@@ -1,7 +1,6 @@
 package com.votingsystem.service;
 
 import com.votingsystem.entity.Menu;
-import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +10,8 @@ public interface MenuService {
     List<Menu> getAll();
 
     Menu getById(int id);
+
+    Menu getByIdAndRestaurantId(int id, int restaurant_id);
 
     Menu save(Menu menu);
 

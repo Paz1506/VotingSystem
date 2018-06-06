@@ -8,9 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * ************************************
- * TO converter for User entity
- * ************************************
+ * @author Paz1506
+ * Converter UserTo - User.
  */
 
 public class UserConverter {

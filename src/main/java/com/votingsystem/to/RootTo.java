@@ -4,10 +4,10 @@ package com.votingsystem.to;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * ************************************
- * Базовый класс для всех TO
- * ************************************
+ * @author Paz1506
+ * Base class for all transfer objects.
  */
+
 public abstract class RootTo {
 
     protected Integer id;

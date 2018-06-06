@@ -8,9 +8,8 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
- * ************************************
- * Transfer object for Dish entity
- * ************************************
+ * @author Paz1506
+ * Transfer object for Dish entity.
  */
 
 public class DishTo extends RootTo implements Serializable {

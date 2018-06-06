@@ -7,9 +7,8 @@ import org.springframework.data.domain.Persistable;
 import javax.persistence.*;
 
 /**
- * ************************************
- * Root-class for all entities
- * ************************************
+ * @author Paz1506
+ * Base class for all entities.
  */
 
 @MappedSuperclass

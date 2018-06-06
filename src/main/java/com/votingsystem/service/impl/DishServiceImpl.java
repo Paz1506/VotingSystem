@@ -52,4 +52,9 @@ public class DishServiceImpl implements DishService {
     public List<Dish> getOfMenuByCurrentDay(int id, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return dishRepository.findOfMenuByCurrentDay(id, startDateTime, endDateTime);
     }
+
+    @Override
+    public Dish getByRestAndMenuAndId(int dish_id, int menu_id, int restaurant_id) {
+        return dishRepository.findByRestAndMenuAndId(dish_id, menu_id, restaurant_id);
+    }
 }

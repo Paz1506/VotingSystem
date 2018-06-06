@@ -13,4 +13,7 @@ public interface DishRepository extends JpaRepository<Dish, Integer> {
 
     @Query("SELECT d FROM Dish d where d.menu.id=:menu_id AND d.menu.date BETWEEN :startDateTime AND :endDateTime")
     List<Dish> findOfMenuByCurrentDay(@Param("menu_id") int menu_id, @Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime);
+
+    @Query("SELECT d FROM Dish d where d.id=:dish_id AND d.menu.id=:menu_id AND d.menu.restaurant.id=:restaurant_id")
+    Dish findByRestAndMenuAndId(@Param("dish_id") int dish_id, @Param("menu_id") int menu_id, @Param("restaurant_id") int restaurant_id);
 }

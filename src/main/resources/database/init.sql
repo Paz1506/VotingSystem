@@ -1,9 +1,10 @@
 DROP TABLE dish IF EXISTS;
 DROP TABLE menu IF EXISTS;
-DROP TABLE restaurant IF EXISTS;
 DROP TABLE role IF EXISTS;
 DROP TABLE vote IF EXISTS;
 DROP TABLE users IF EXISTS;
+DROP TABLE restaurant IF EXISTS;
+
 DROP SEQUENCE GLOBAL_SEQUENCE IF EXISTS;
 
 CREATE SEQUENCE GLOBAL_SEQUENCE
@@ -22,7 +23,7 @@ CREATE TABLE menu
   name             VARCHAR(100)            NOT NULL,
   date             TIMESTAMP               NOT NULL,
   restaurant_id    INT                     NOT NULL,
-  FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE CASCADE --При удалении ресторана, уд. все меню.
+  FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE CASCADE
 );
 
 CREATE TABLE dish
@@ -31,7 +32,7 @@ CREATE TABLE dish
   name             VARCHAR(100)            NOT NULL,
   price            INT                     NOT NULL,
   menu_id          INT                     NOT NULL,
-  FOREIGN KEY (menu_id) REFERENCES menu (id) ON DELETE CASCADE --При удалении меню - уд. все блюда в нем
+  FOREIGN KEY (menu_id) REFERENCES menu (id) ON DELETE CASCADE
 );
 
 CREATE TABLE users
@@ -60,7 +61,7 @@ CREATE TABLE vote
   date_time        TIMESTAMP DEFAULT now() NOT NULL,
   user_id          INTEGER                 NOT NULL,
   restaurant_id    INTEGER                 NOT NULL,
-  CONSTRAINT votes_idx UNIQUE (user_id, date_time),
+  CONSTRAINT votes_idx UNIQUE (user_id, date_time, restaurant_id),
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   FOREIGN KEY (restaurant_id) REFERENCES restaurant (id) ON DELETE CASCADE
 );

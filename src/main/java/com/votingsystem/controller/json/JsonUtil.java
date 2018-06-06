@@ -52,7 +52,8 @@ public class JsonUtil {
     }
 
     private static <T> Map<String, Object> getAsMapWithIgnore(T obj, String[] ignoreProps) {
-        Map<String, Object> map = getMapper().convertValue(obj, new TypeReference<Map<String, Object>>() {});
+        Map<String, Object> map = getMapper().convertValue(obj, new TypeReference<Map<String, Object>>() {
+        });
         for (String prop : ignoreProps) {
             map.remove(prop);
         }

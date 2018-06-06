@@ -8,19 +8,31 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
- * ************************************
- * Сущность "Голос"
- * Поля:
- * - пользователь (user) сущность "Пользователь"
- * - дата - время голосования (dateTime)
- * ************************************
+ * @author Paz1506
+ * Vote entity.
  */
 
 @Entity
 @Table(name = "vote")
 public class Vote extends AbstractEntity {
 
-//    @ManyToOne(fetch = FetchType.LAZY)
+    public Vote() {
+    }
+
+    public Vote(User user, LocalDateTime dateTime, Restaurant restaurant) {
+        this.user = user;
+        this.dateTime = dateTime;
+        this.restaurant = restaurant;
+    }
+
+    public Vote(Integer id, User user, LocalDateTime dateTime, Restaurant restaurant) {
+        super(id);
+        this.user = user;
+        this.dateTime = dateTime;
+        this.restaurant = restaurant;
+    }
+
+    //    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull
@@ -33,7 +45,7 @@ public class Vote extends AbstractEntity {
 //    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime dateTime;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
+    //    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "restaurant_id", nullable = false)
     @JsonIgnore // else stackoverflow http://localhost:8080/v1.0/restaurants/1/menus

@@ -8,6 +8,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * @author Paz1506
+ * Incapsulated autohrized
+ * user in application.
+ */
+
 public class AuthUser extends org.springframework.security.core.userdetails.User {
 
     private UserTo userTo;

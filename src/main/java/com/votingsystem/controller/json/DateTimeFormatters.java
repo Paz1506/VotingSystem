@@ -9,6 +9,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+/**
+ * @author Paz1506
+ * Custom formatter, for convert
+ * String parameters to LDT
+ */
+
 public class DateTimeFormatters {
     public static class LocalDateFormatter implements Formatter<LocalDate> {
 

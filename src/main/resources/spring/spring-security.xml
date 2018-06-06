@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -17,7 +16,7 @@
     </http>
 
     <!--В данной (демонстрационной) имплементации приложения,
-    используется NoOpPasswordEncoder, для демнострации базовых
+    используется NoOpPasswordEncoder, для демонстрации базовых
     возможностей авторизации в приложении.-->
 
     <beans:bean class="org.springframework.security.crypto.password.NoOpPasswordEncoder" id="passwordEncoder" factory-method="getInstance"/>

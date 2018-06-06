@@ -1,5 +1,6 @@
 package com.votingsystem.controller;
 
+import com.votingsystem.entity.Dish;
 import com.votingsystem.entity.Restaurant;
 import com.votingsystem.entity.User;
 import com.votingsystem.entity.Vote;
@@ -10,11 +11,9 @@ import com.votingsystem.to.DishTo;
 import com.votingsystem.to.MenuTo;
 import com.votingsystem.to.converters.DishConverter;
 import com.votingsystem.to.converters.MenuConverter;
-import com.votingsystem.util.DateTimeUtil;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -37,9 +36,7 @@ public class UserController extends RootController {
         super(restaurantService, menuService, dishService, voteService, userService);
     }
 
-    /*=================================
-      Работа с ресторанами
-      ================================*/
+    //restaurants
 
     /**
      * Возвращает рестораны, в которых опубликовано меню
@@ -66,9 +63,7 @@ public class UserController extends RootController {
         return restaurantService.getById(restaurant_id);
     }
 
-    /*=================================
-      Работа с меню
-      ================================*/
+    //menus
 
     /**
      * Возвращает все меню ресторана
@@ -87,20 +82,18 @@ public class UserController extends RootController {
     }
 
     /**
-     * Возвращает меню по id.
+     * Возвращает меню по id для конкретного ресторана.
      *
      * @param menu_id
      * @return
      */
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MenuTo getMenuById(@PathVariable("menu_id") int menu_id) {
+    public MenuTo getMenuById(@PathVariable("menu_id") int menu_id, @PathVariable("restaurant_id") int restaurant_id) {
         log.info("User {} get menu {}", AuthUser.id(), menu_id);
-        return MenuConverter.getToFromMenu(menuService.getById(menu_id));
+        return MenuConverter.getToFromMenu(menuService.getByIdAndRestaurantId(menu_id, restaurant_id));
     }
 
-    /*=================================
-      Работа с блюдами
-      ================================*/
+    //dishes
 
     /**
      * Возвращает все блюда в меню за текущий день.
@@ -118,20 +111,21 @@ public class UserController extends RootController {
     }
 
     /**
-     * Возвращает блюдо по id.
+     * Возвращает блюдо по id для
+     * конкретного меню и ресторана.
      *
      * @param dish_id
+     * @param menu_id
+     * @param restaurant_id
      * @return
      */
     @GetMapping(value = {RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public DishTo getDishById(@PathVariable("dish_id") int dish_id) {
+    public DishTo getDishById(@PathVariable("dish_id") int dish_id, @PathVariable("menu_id") int menu_id, @PathVariable("restaurant_id") int restaurant_id) {
         log.info("User {} get dish {}", AuthUser.id(), dish_id);
-        return DishConverter.getToFromDish(dishService.getById(dish_id));
+        return DishConverter.getToFromDish(dishService.getByRestAndMenuAndId(dish_id, menu_id, restaurant_id));
     }
 
-    /*=================================
-      Работа с голосами
-      ================================*/
+    //votes
 
     /**
      * Возвращает количество голосов ресторана
@@ -168,10 +162,8 @@ public class UserController extends RootController {
     @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL/*, consumes = MediaType.APPLICATION_JSON_VALUE*/)
     public void createOrUpdateVote(@PathVariable("restaurant_id") int restaurant_id) throws VotingTimeExpiredException {
         User current_user = userService.getById(AuthUser.id());
-
 //        LocalTime current_time = LocalTime.now();//Production
         LocalTime current_time = LocalTime.of(10, 0, 0);//TODO Fix it
-
         if (current_time.isBefore(tresholdTime)) {
             Vote voteOfUserByCurrentDay = voteService.getByUserIdAndDateTime(BEGIN_CURRENT_DAY, END_CURRENT_DAY, current_user.getId());
             if (voteOfUserByCurrentDay != null) {

@@ -9,18 +9,48 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * ************************************
- * Entity "User"
- * ************************************
+ * @author Paz1506
+ * User entity.
  */
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email", name = "users_unique_email_idx")})
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User extends AbstractEntity {
+
+    public User() {
+    }
+
+    public User(String name, String email, String password, Set<Role> roles) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.enabled = enabled;
+        this.registered = registered;
+        this.roles = roles;
+    }
+
+    public User(Integer id, String name, String email, String password, Set<Role> roles) {
+        super(id);
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.enabled = enabled;
+        this.registered = registered;
+        this.roles = roles;
+    }
+
+    public User(Integer id, String name, String email, String password, Role role, Role... roles) {
+        this(id, name, email, password, EnumSet.of(role, roles));
+    }
+
+    public User(String name, String email, String password, Role role, Role... roles) {
+        this(name, email, password, EnumSet.of(role, roles));
+    }
 
     @Column(name = "name", nullable = false)
     @NotBlank
@@ -48,7 +78,7 @@ public class User extends AbstractEntity {
     @NotNull
     private Date registered = new Date();
 
-//    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) //(EXCEPTION ON START APP! WTF?)
+    //    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) //(EXCEPTION ON START APP! WTF?)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "role", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")

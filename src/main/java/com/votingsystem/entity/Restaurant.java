@@ -2,19 +2,16 @@ package com.votingsystem.entity;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.validator.constraints.Range;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * ************************************
- * Сущность "Ресторан"
- * Поля:
- * - имя
- * - список меню (сущность "Меню") -- Убрать?
- * ************************************
+ * @author Paz1506
+ * Restaurant entity.
  */
 
 //@NamedQueries({
@@ -26,7 +23,17 @@ import javax.validation.constraints.Size;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Restaurant extends AbstractEntity {
 
-//    public static final String ALL = "Restaurant.getAll";
+    public Restaurant() {
+    }
+
+    public Restaurant(String name) {
+        this.name = name;
+    }
+
+    public Restaurant(Integer id, String name) {
+        super(id);
+        this.name = name;
+    }
 
     @Column(name = "name", nullable = false)
     @NotNull

@@ -3,12 +3,9 @@ package com.votingsystem.to.converters;
 import com.votingsystem.entity.Menu;
 import com.votingsystem.to.MenuTo;
 
-import java.time.LocalDateTime;
-
 /**
- * ************************************
- * TO converter for Menu entity
- * ************************************
+ * @author Paz1506
+ * Converter MenuTo - Menu.
  */
 
 public class MenuConverter {
@@ -18,7 +15,7 @@ public class MenuConverter {
         return new MenuTo(menu.getId(), menu.getName(), menu.getDate());
     }
 
-    //GetDish from TO (without Rest & Dishes (-> set to AppController))
+    //GetDish from TO (without Rest & Dishes (-> set to сontroller))
     public static Menu getMenuFromTo(MenuTo newMenu) {
         Menu menu = new Menu();
         menu.setId(newMenu.getId());

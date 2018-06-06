@@ -2,26 +2,27 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-       http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+       http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    <jdbc:initialize-database data-source="dataSource" enabled="${database.init}">
+        <jdbc:script encoding="utf-8" location="classpath:database/init.sql"/>
+        <jdbc:script encoding="utf-8" location="classpath:database/populate.sql"/><!--Fix it!-->
+    </jdbc:initialize-database>
 
     <tx:annotation-driven/>
 
     <context:property-placeholder location="classpath:database/hsqldb.properties" system-properties-mode="OVERRIDE"/>
 
-    <context:component-scan base-package="com.**.repository"/>
-    <context:component-scan base-package="com.**.votingsystem.service"/><!--Переделать как выше и проверить-->
-    <jpa:repositories base-package="com.**.repository"/>
 
-    <jdbc:initialize-database data-source="dataSource" enabled="${database.init}">
-        <jdbc:script location="classpath:database/init.sql"/>
-        <jdbc:script location="classpath:database/populate.sql"/><!--Fix it!-->
-    </jdbc:initialize-database>
+
+
 
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource"
@@ -32,29 +33,23 @@
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
           p:dataSource-ref="dataSource"
-          p:packagesToScan="com.**.entity"
-          p:persistenceUnitName="persistenceUnit">
+          p:packagesToScan="com.votingsystem.entity">
 
-        <!--Caching 6_3-->
         <property name="jpaPropertyMap">
             <map>
-                <!--<entry key="#{T(org.hibernate.cfg.AvailableSettings).FORMAT_SQL}" value="true"/>
-                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SQL_COMMENTS}"
-                       value="${hibernate.use_sql_comments}"/>-->
-
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).FORMAT_SQL}" value="true"/>
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SQL_COMMENTS}" value="true"/>
                 <!--https://github.com/hibernate/hibernate-orm/blob/master/documentation/src/main/asciidoc/userguide/chapters/caching/Caching.adoc#caching-provider-jcache-->
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).CACHE_REGION_FACTORY}" value="org.hibernate.cache.jcache.JCacheRegionFactory"/>
                 <entry key="#{T(org.hibernate.cache.jcache.JCacheRegionFactory).PROVIDER}" value="org.ehcache.jsr107.EhcacheCachingProvider"/>
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SECOND_LEVEL_CACHE}" value="true"/>
-                <!--Генерит статичтику в консольку-->
-                <!--<entry key="#{T(org.hibernate.cfg.AvailableSettings).GENERATE_STATISTICS}" value="true"/>-->
-                <!--<entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_QUERY_CACHE}" value="false"/> &lt;!&ndash;default&ndash;&gt;-->
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_QUERY_CACHE}" value="false"/> <!--default-->
             </map>
         </property>
 
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
-                  p:showSql="${database.showSql}">
+                  p:showSql="true"><!--p:showSql="${database.showSql}">-->
             </bean>
         </property>
     </bean>
@@ -64,5 +59,9 @@
           p:entityManagerFactory-ref="entityManagerFactory"/>
 
     <bean class="com.votingsystem.repository.HibernateUtil"/>
+
+    <context:component-scan base-package="com.**.repository"/>
+    <!--<context:component-scan base-package="com.**.service"/>&lt;!&ndash;Переделать как выше и проверить&ndash;&gt;-->
+    <jpa:repositories base-package="com.**.repository"/>
 
 </beans>

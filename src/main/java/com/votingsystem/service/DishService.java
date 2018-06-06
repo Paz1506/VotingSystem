@@ -19,4 +19,6 @@ public interface DishService {
 
     List<Dish> getOfMenuByCurrentDay(int id, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
+    Dish getByRestAndMenuAndId(int dish_id, int menu_id, int restaurant_id);
+
 }

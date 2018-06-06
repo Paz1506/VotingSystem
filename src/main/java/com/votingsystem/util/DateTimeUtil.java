@@ -47,11 +47,11 @@ public class DateTimeUtil {
         return StringUtils.isEmpty(str) ? null : LocalDateTime.parse(str);
     }
 
-    public static LocalDateTime safeBeginCurrentDay(LocalDate startDate, LocalTime startTime){
+    public static LocalDateTime safeBeginCurrentDay(LocalDate startDate, LocalTime startTime) {
         return LocalDateTime.of(startDate != null ? startDate : LocalDate.now(), startTime != null ? startTime : LocalTime.of(0, 0, 0));
     }
 
-    public static LocalDateTime safeEndCurrentDay(LocalDate startDate, LocalTime startTime){
+    public static LocalDateTime safeEndCurrentDay(LocalDate startDate, LocalTime startTime) {
         return LocalDateTime.of(startDate != null ? startDate : LocalDate.now(), startTime != null ? startTime : LocalTime.of(23, 59, 59));
     }
 
