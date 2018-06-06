@@ -1,0 +1,24 @@
+<ehcache:config xmlns:ehcache="http://www.ehcache.org/v3"
+                xmlns:jcache="http://www.ehcache.org/v3/jsr107">
+
+    <!--http://www.ehcache.org/documentation/3.4/xml.html-->
+    <!--http://www.ehcache.org/documentation/3.1/107.html#supplement-jsr-107-configurations-->
+
+    <!--<persistence directory="${user.home}/cache-data"/>-->
+
+    <ehcache:cache-template name="expiryCache">
+        <ehcache:expiry>
+            <ehcache:ttl unit="minutes">5</ehcache:ttl>
+        </ehcache:expiry>
+        <ehcache:heap unit="entries">5000</ehcache:heap>
+    </ehcache:cache-template>
+
+    <ehcache:cache-template name="singleNonExpiryCache">
+        <ehcache:expiry>
+            <ehcache:none/>
+        </ehcache:expiry>
+        <ehcache:heap>1</ehcache:heap>
+    </ehcache:cache-template>
+
+    <ehcache:cache alias="restaurants" uses-template="singleNonExpiryCache"/>
+</ehcache:config>

@@ -4,6 +4,8 @@ import com.votingsystem.entity.Restaurant;
 import com.votingsystem.repository.RestaurantRepository;
 import com.votingsystem.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    @Cacheable("restaurants")
     public List<Restaurant> getAll() {
         return this.restaurantRepository.findAll();
     }
@@ -33,12 +36,14 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "restaurants", allEntries = true)
     public Restaurant save(Restaurant restaurant) {
         return this.restaurantRepository.saveAndFlush(restaurant);
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "restaurants", allEntries = true)
     public void delete(int id) {
         this.restaurantRepository.deleteById(id);
     }
