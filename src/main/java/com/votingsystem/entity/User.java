@@ -1,5 +1,6 @@
 package com.votingsystem.entity;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -83,6 +84,7 @@ public class User extends AbstractEntity {
     @Column(name = "role")
     @ElementCollection(fetch = FetchType.EAGER)
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @BatchSize(size = 100)
     private Set<Role> roles;
 
     public String getName() {

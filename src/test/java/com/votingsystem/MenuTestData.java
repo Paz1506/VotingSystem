@@ -20,6 +20,4 @@ public class MenuTestData {
     public static final int ID_MENU_6 = 10;
     public static final int ID_MENU_7 = 11;
 
-//    public static final Menu MENU_5 = new Menu(ID_MENU_1, "menu_1", LocalDateTime.now(), RestaurantTestData.ID_RESTAURANT_1);
-
 }

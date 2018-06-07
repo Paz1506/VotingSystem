@@ -1,6 +1,7 @@
 package com.votingsystem.service;
 
 import com.votingsystem.entity.Restaurant;
+import com.votingsystem.exceptions.EntityNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,7 +10,7 @@ public interface RestaurantService {
 
     List<Restaurant> getAll();
 
-    Restaurant getById(int id);
+    Restaurant getById(int id) throws EntityNotFoundException;
 
     Restaurant save(Restaurant restaurant);
 

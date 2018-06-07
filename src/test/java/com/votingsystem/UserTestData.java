@@ -16,5 +16,4 @@ public class UserTestData {
 
     public static final User USER = new User(ID_USER, "User", "user@yandex.ru", "1234", Role.ROLE_USER);
     public static final User ADMIN = new User(ID_ADMIN, "User", "admin@gmail.com", "1234", Role.ROLE_ADMIN);
-
 }

@@ -20,10 +20,6 @@
 
     <context:property-placeholder location="classpath:database/hsqldb.properties" system-properties-mode="OVERRIDE"/>
 
-
-
-
-
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource"
           p:driverClassName="org.hsqldb.jdbcDriver"
@@ -37,19 +33,20 @@
 
         <property name="jpaPropertyMap">
             <map>
-                <entry key="#{T(org.hibernate.cfg.AvailableSettings).FORMAT_SQL}" value="true"/>
-                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SQL_COMMENTS}" value="true"/>
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).FORMAT_SQL}" value="${hibernate.format_sql}"/>
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SQL_COMMENTS}" value="${hibernate.use_sql_comments}"/>
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).GENERATE_STATISTICS}" value="${hibernate.generate_statistics}"/>
                 <!--https://github.com/hibernate/hibernate-orm/blob/master/documentation/src/main/asciidoc/userguide/chapters/caching/Caching.adoc#caching-provider-jcache-->
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).CACHE_REGION_FACTORY}" value="org.hibernate.cache.jcache.JCacheRegionFactory"/>
                 <entry key="#{T(org.hibernate.cache.jcache.JCacheRegionFactory).PROVIDER}" value="org.ehcache.jsr107.EhcacheCachingProvider"/>
-                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SECOND_LEVEL_CACHE}" value="true"/>
-                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_QUERY_CACHE}" value="false"/> <!--default-->
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SECOND_LEVEL_CACHE}" value="${hibernate.use_second_level_cache}"/>
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_QUERY_CACHE}" value="${hibernate.use_query_cache}"/> <!--default-->
             </map>
         </property>
 
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
-                  p:showSql="true"><!--p:showSql="${database.showSql}">-->
+                  p:showSql="${hibernate.showSql}">
             </bean>
         </property>
     </bean>
@@ -57,11 +54,9 @@
     <!-- Transaction manager for a single JPA EntityManagerFactory (alternative to JTA) -->
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
           p:entityManagerFactory-ref="entityManagerFactory"/>
-
     <bean class="com.votingsystem.repository.HibernateUtil"/>
 
     <context:component-scan base-package="com.**.repository"/>
-    <!--<context:component-scan base-package="com.**.service"/>&lt;!&ndash;Переделать как выше и проверить&ndash;&gt;-->
     <jpa:repositories base-package="com.**.repository"/>
 
 </beans>

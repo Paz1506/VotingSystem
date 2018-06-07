@@ -1,8 +1,10 @@
 package com.votingsystem.service.impl;
 
 import com.votingsystem.entity.Dish;
+import com.votingsystem.exceptions.EntityNotFoundException;
 import com.votingsystem.repository.DishRepository;
 import com.votingsystem.service.DishService;
+import com.votingsystem.util.DataValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +29,8 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Dish getById(int id) {
-        return dishRepository.findById(id).orElse(null);
+    public Dish getById(int id) throws EntityNotFoundException {
+        return DataValidationUtil.validNotFound(dishRepository.findById(id).orElse(null), id);
     }
 
     @Override
@@ -54,7 +56,7 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public Dish getByRestAndMenuAndId(int dish_id, int menu_id, int restaurant_id) {
-        return dishRepository.findByRestAndMenuAndId(dish_id, menu_id, restaurant_id);
+    public Dish getByRestAndMenuAndId(int dish_id, int menu_id, int restaurant_id) throws EntityNotFoundException {
+        return DataValidationUtil.validNotFound(dishRepository.findByRestAndMenuAndId(dish_id, menu_id, restaurant_id), dish_id);
     }
 }

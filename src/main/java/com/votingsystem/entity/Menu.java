@@ -1,5 +1,7 @@
 package com.votingsystem.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -47,17 +49,16 @@ public class Menu extends AbstractEntity {
      */
     @Column(name = "date", nullable = false)
     @NotNull
-//        @NotNull - TODO -сделать TO, иначе ошибка валидации
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime date;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "menu"/*, cascade = CascadeType.ALL, orphanRemoval = true*/)
-//    @NotNull //- TODO -сделать TO, иначе ошибка валидации
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "menu", cascade = CascadeType.ALL)
+    @OrderBy("id DESC")
     private List<Dish> dishes;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "restaurant_id", nullable = false)
-//    @JsonIgnore // else stackoverflow http://localhost:8080/v1.0/restaurants/1/menus
     private Restaurant restaurant;
 
 

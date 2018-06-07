@@ -1,9 +1,9 @@
 package com.votingsystem.controller;
 
-import com.votingsystem.entity.Dish;
 import com.votingsystem.entity.Restaurant;
 import com.votingsystem.entity.User;
 import com.votingsystem.entity.Vote;
+import com.votingsystem.exceptions.EntityNotFoundException;
 import com.votingsystem.exceptions.VotingTimeExpiredException;
 import com.votingsystem.security.AuthUser;
 import com.votingsystem.service.*;
@@ -24,8 +24,8 @@ import static com.votingsystem.util.DateTimeUtil.*;
 
 /**
  * @author Paz1506
- * Контроллер, обработаывающий запросы
- * пользователей системы.
+ * Controller for processing
+ * users requests.
  */
 
 @RestController
@@ -39,11 +39,9 @@ public class UserController extends RootController {
     //restaurants
 
     /**
-     * Возвращает рестораны, в которых опубликовано меню
-     * за текущий день. Если в ресторане не опубликовано
-     * меню за текущий день, он не возвращается.
-     *
-     * @return
+     * @return restaurants in which the menu is published
+     * for the current day. If the restaurant is not published
+     * menu for the current day, it is not returned.
      */
     @GetMapping(value = RESTAURANTS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Restaurant> getAllRestaurantByCurrentDayWithMenu() {
@@ -52,13 +50,11 @@ public class UserController extends RootController {
     }
 
     /**
-     * Возвращает ресторан по id.
-     *
      * @param restaurant_id
-     * @return
+     * @return restaurant by id.
      */
     @GetMapping(value = RESTAURANTS_URL + "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Restaurant getRestaurantById(@PathVariable("id") int restaurant_id) {
+    public Restaurant getRestaurantById(@PathVariable("id") int restaurant_id) throws EntityNotFoundException {
         log.info("User {} get restaurant {}", AuthUser.id(), restaurant_id);
         return restaurantService.getById(restaurant_id);
     }
@@ -66,11 +62,9 @@ public class UserController extends RootController {
     //menus
 
     /**
-     * Возвращает все меню ресторана
-     * опубликованные за текущий день.
-     *
      * @param restaurant_id
-     * @return
+     * @return the entire restaurant menu
+     * published for the current day.
      */
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MenuTo> getAllMenusOfRestaurantByCurrentDay(@PathVariable("restaurant_id") int restaurant_id) {
@@ -82,13 +76,11 @@ public class UserController extends RootController {
     }
 
     /**
-     * Возвращает меню по id для конкретного ресторана.
-     *
      * @param menu_id
-     * @return
+     * @return menu by restaurant id.
      */
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public MenuTo getMenuById(@PathVariable("menu_id") int menu_id, @PathVariable("restaurant_id") int restaurant_id) {
+    public MenuTo getMenuById(@PathVariable("menu_id") int menu_id, @PathVariable("restaurant_id") int restaurant_id) throws EntityNotFoundException {
         log.info("User {} get menu {}", AuthUser.id(), menu_id);
         return MenuConverter.getToFromMenu(menuService.getByIdAndRestaurantId(menu_id, restaurant_id));
     }
@@ -96,10 +88,9 @@ public class UserController extends RootController {
     //dishes
 
     /**
-     * Возвращает все блюда в меню за текущий день.
-     *
      * @param menu_id
-     * @return
+     * @return all dishes in the menu
+     * for the current day.
      */
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DishTo> getDishesOfMenuByCurrentDay(@PathVariable("menu_id") int menu_id) {
@@ -111,16 +102,13 @@ public class UserController extends RootController {
     }
 
     /**
-     * Возвращает блюдо по id для
-     * конкретного меню и ресторана.
-     *
      * @param dish_id
      * @param menu_id
      * @param restaurant_id
-     * @return
+     * @return dish by menu id & restaurant id.
      */
     @GetMapping(value = {RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public DishTo getDishById(@PathVariable("dish_id") int dish_id, @PathVariable("menu_id") int menu_id, @PathVariable("restaurant_id") int restaurant_id) {
+    public DishTo getDishById(@PathVariable("dish_id") int dish_id, @PathVariable("menu_id") int menu_id, @PathVariable("restaurant_id") int restaurant_id) throws EntityNotFoundException {
         log.info("User {} get dish {}", AuthUser.id(), dish_id);
         return DishConverter.getToFromDish(dishService.getByRestAndMenuAndId(dish_id, menu_id, restaurant_id));
     }
@@ -128,19 +116,15 @@ public class UserController extends RootController {
     //votes
 
     /**
-     * Возвращает количество голосов ресторана
-     * за текущий день, если время больше 11:00.
-     * Если время меньше - возвращает значение -1.
-     *
      * @param restaurant_id
-     * @return
+     * @return the count of restaurant votes
+     * for the current day, if the time is after 11:00 AM.
+     * If the time is before, returns -1.
      */
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL + "/count", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getCountRestaurantVotesById(@PathVariable("restaurant_id") int restaurant_id) {
         log.info("User {} get restaurant {} count votes for current day", AuthUser.id(), restaurant_id);
-        //получаем текущее время
         LocalTime current_time = LocalTime.now();//Production
-//        LocalTime current_time = LocalTime.of(12, 0, 0);//TODO Fix it
         if (current_time.isAfter(tresholdTime)) {
             return voteService.getCountByRestaurantId(BEGIN_CURRENT_DAY, END_CURRENT_DAY, restaurant_id);
         } else {
@@ -149,21 +133,20 @@ public class UserController extends RootController {
     }
 
     /**
-     * Голосование пользователя за ресторан. Проголосовать можно только за один
-     * ресторан за текущие сутки. Голосование происходит строго до 11:00 текущих
-     * суток. Голос за ресторан отменяется, если пользователь:
-     * ** Голосует за другой ресторан.
-     * ** Голосует за тот-же ресторан второй раз. При этом голос просто отменяется.
-     * После 11:00 голосовать и отменять свой голос нельзя.
+     * Voting of the user for the restaurant. You can vote only for one
+     * restaurant for the current day. Voting is strictly up to 11:00 current
+     * day. Vote for the restaurant is canceled if the user:
+     * ** Vote for another restaurant.
+     * ** Vote for the same restaurant a second time. At the same time, vote is simply canceled.
+     * After 11:00 AM, you can not vote and cancel your vote.
      *
      * @param restaurant_id
      * @throws VotingTimeExpiredException
      */
     @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL/*, consumes = MediaType.APPLICATION_JSON_VALUE*/)
-    public void createOrUpdateVote(@PathVariable("restaurant_id") int restaurant_id) throws VotingTimeExpiredException {
+    public void createOrUpdateVote(@PathVariable("restaurant_id") int restaurant_id) throws VotingTimeExpiredException, EntityNotFoundException {
         User current_user = userService.getById(AuthUser.id());
-//        LocalTime current_time = LocalTime.now();//Production
-        LocalTime current_time = LocalTime.of(10, 0, 0);//TODO Fix it
+        LocalTime current_time = LocalTime.now();
         if (current_time.isBefore(tresholdTime)) {
             Vote voteOfUserByCurrentDay = voteService.getByUserIdAndDateTime(BEGIN_CURRENT_DAY, END_CURRENT_DAY, current_user.getId());
             if (voteOfUserByCurrentDay != null) {
@@ -184,14 +167,11 @@ public class UserController extends RootController {
     }
 
     /**
-     * Возвращает голос авторизованного
-     * пользователя за ресторан.
-     *
      * @param restaurant_id
      * @param authUser
-     * @return
+     * @return authorized user vote.
      */
-    private Vote newUserVote(int restaurant_id, User authUser) {
+    private Vote newUserVote(int restaurant_id, User authUser) throws EntityNotFoundException {
         log.info("User {} voting for restaurant {}", authUser.getId(), restaurant_id);
         Vote vote = new Vote();
         vote.setDateTime(LocalDateTime.now());

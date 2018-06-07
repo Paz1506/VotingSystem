@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DishRepository extends JpaRepository<Dish, Integer> {
+
     List<Dish> findByMenuId(@Param("menu_id") Integer id);
 
     @Query("SELECT d FROM Dish d where d.menu.id=:menu_id AND d.menu.date BETWEEN :startDateTime AND :endDateTime")

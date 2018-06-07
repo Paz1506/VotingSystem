@@ -1,9 +1,11 @@
 package com.votingsystem.service.impl;
 
 import com.votingsystem.entity.User;
+import com.votingsystem.exceptions.EntityNotFoundException;
 import com.votingsystem.repository.UserRepository;
 import com.votingsystem.security.AuthUser;
 import com.votingsystem.service.UserService;
+import com.votingsystem.util.DataValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,8 +37,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User getById(int id) {
-        return userRepository.findById(id).orElse(null);
+    public User getById(int id) throws EntityNotFoundException {
+        return DataValidationUtil.validNotFound(userRepository.findById(id).orElse(null), id);
     }
 
     @Override

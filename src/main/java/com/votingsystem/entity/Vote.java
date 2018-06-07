@@ -1,6 +1,8 @@
 package com.votingsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -32,23 +34,22 @@ public class Vote extends AbstractEntity {
         this.restaurant = restaurant;
     }
 
-    //    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull
-    @JsonIgnore //TODO убрать и сделать через TO
+    @JsonIgnore
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Column(name = "date_time", nullable = false)
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime dateTime;
 
-    //    @ManyToOne(fetch = FetchType.LAZY)
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "restaurant_id", nullable = false)
-    @JsonIgnore // else stackoverflow http://localhost:8080/v1.0/restaurants/1/menus
+    @JsonIgnore
     private Restaurant restaurant;
 
     public User getUser() {

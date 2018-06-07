@@ -9,9 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * @author Paz1506
- * Вспомогательный класс для
- * работы с датой/временем.
- * //TODO дублирует форматтер
+ * Util date/time class.
  */
 
 public class DateTimeUtil {

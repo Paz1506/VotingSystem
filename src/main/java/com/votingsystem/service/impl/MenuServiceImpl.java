@@ -1,8 +1,10 @@
 package com.votingsystem.service.impl;
 
 import com.votingsystem.entity.Menu;
+import com.votingsystem.exceptions.EntityNotFoundException;
 import com.votingsystem.repository.MenuRepository;
 import com.votingsystem.service.MenuService;
+import com.votingsystem.util.DataValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +29,13 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public Menu getById(int id) {
-        return menuRepository.findById(id).orElse(null);
+    public Menu getById(int id) throws EntityNotFoundException {
+        return DataValidationUtil.validNotFound(menuRepository.findById(id).orElse(null), id);
     }
 
     @Override
-    public Menu getByIdAndRestaurantId(int id, int restaurant_id) {
-        return menuRepository.findByIdAndRestaurantId(id, restaurant_id);
+    public Menu getByIdAndRestaurantId(int id, int restaurant_id) throws EntityNotFoundException {
+        return DataValidationUtil.validNotFound(menuRepository.findByIdAndRestaurantId(id, restaurant_id), id);
     }
 
     @Override

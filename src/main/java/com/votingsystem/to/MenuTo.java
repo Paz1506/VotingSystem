@@ -28,7 +28,6 @@ public class MenuTo extends RootTo implements Serializable {
 
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-//    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime date;
 
 
@@ -47,7 +46,6 @@ public class MenuTo extends RootTo implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
 
     @Override
     public String toString() {

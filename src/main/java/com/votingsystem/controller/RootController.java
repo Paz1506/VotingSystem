@@ -17,7 +17,6 @@ public abstract class RootController {
     final static String USERS_URL = "/users";
     final static String ADMIN = "/admin";
 
-
     protected final RestaurantService restaurantService;
     protected final MenuService menuService;
     protected final DishService dishService;

@@ -1,8 +1,10 @@
 package com.votingsystem.service.impl;
 
 import com.votingsystem.entity.Vote;
+import com.votingsystem.exceptions.EntityNotFoundException;
 import com.votingsystem.repository.VoteRepository;
 import com.votingsystem.service.VoteService;
+import com.votingsystem.util.DataValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +29,8 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public Vote getById(int id) {
-        return voteRepository.findById(id).orElse(null);
+    public Vote getById(int id) throws EntityNotFoundException {
+        return DataValidationUtil.validNotFound(voteRepository.findById(id).orElse(null), id);
     }
 
     @Override
@@ -54,8 +56,8 @@ public class VoteServiceImpl implements VoteService {
     }
 
     @Override
-    public Vote getByUserIdAndDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        return voteRepository.findByUserIdAndDateTime(startDateTime, endDateTime, userId);
+    public Vote getByUserIdAndDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) throws EntityNotFoundException {
+        return DataValidationUtil.validNotFound(voteRepository.findByUserIdAndDateTime(startDateTime, endDateTime, userId), userId);
     }
 
     @Override

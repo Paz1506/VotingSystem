@@ -5,17 +5,16 @@ import com.votingsystem.UserTestData;
 import com.votingsystem.controller.json.JsonUtil;
 import com.votingsystem.entity.Dish;
 import com.votingsystem.entity.Menu;
-import com.votingsystem.repository.DishRepository;
-import com.votingsystem.repository.MenuRepository;
-import com.votingsystem.repository.RestaurantRepository;
-import com.votingsystem.repository.VoteRepository;
+import com.votingsystem.repository.*;
 import com.votingsystem.to.converters.DishConverter;
 import com.votingsystem.to.converters.MenuConverter;
 import com.votingsystem.util.DateTimeUtil;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,6 +60,12 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private CacheManager cacheManager;
+
+    @Autowired(required = false)
+    private HibernateUtil hibernateUtil;
+
+    @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
@@ -82,6 +87,15 @@ public class UserControllerTest {
                 .addFilter(CHARACTER_ENCODING_FILTER)
                 .apply(springSecurity())
                 .build();
+    }
+
+    @Before
+    public void setUp() {
+        cacheManager.getCache("users").clear();
+        cacheManager.getCache("restaurants").clear();
+        if (hibernateUtil != null) {
+            hibernateUtil.clear2ndLevelHibernateCache();
+        }
     }
 
     @Test

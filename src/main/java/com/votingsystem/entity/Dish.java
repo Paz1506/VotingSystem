@@ -2,6 +2,8 @@ package com.votingsystem.entity;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
@@ -48,9 +50,8 @@ public class Dish extends AbstractEntity {
     private Integer price;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "menu_id", nullable = false)
-//    @NotNull - TODO -сделать TO, иначе ошибка валидации
-//    @JsonIgnore // в ТО сделать только айдишник меню
     private Menu menu;
 
     public String getName() {
@@ -82,7 +83,6 @@ public class Dish extends AbstractEntity {
         return "Dish{" +
                 "name='" + name + '\'' +
                 ", price=" + price +
-//                ", menu_id=" + menu.getId() + //Это сделать в ТО
                 ", id=" + id +
                 '}';
     }

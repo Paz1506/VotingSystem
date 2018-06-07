@@ -1,8 +1,10 @@
 package com.votingsystem.service.impl;
 
 import com.votingsystem.entity.Restaurant;
+import com.votingsystem.exceptions.EntityNotFoundException;
 import com.votingsystem.repository.RestaurantRepository;
 import com.votingsystem.service.RestaurantService;
+import com.votingsystem.util.DataValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,8 +32,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Restaurant getById(int id) {
-        return this.restaurantRepository.findById(id).orElse(null);
+    public Restaurant getById(int id) throws EntityNotFoundException {
+        return DataValidationUtil.validNotFound(this.restaurantRepository.findById(id).orElse(null), id);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.votingsystem.controller;
 
 import com.votingsystem.entity.*;
+import com.votingsystem.exceptions.EntityNotFoundException;
 import com.votingsystem.security.AuthUser;
 import com.votingsystem.service.*;
 import com.votingsystem.to.DishTo;
@@ -27,8 +28,8 @@ import static com.votingsystem.util.DateTimeUtil.safeEndCurrentDay;
 
 /**
  * @author Paz1506
- * Контроллер, обрабатывающий запросы
- * администраторов системы.
+ * Controller for processing
+ * administrators requests.
  */
 
 @RestController
@@ -42,9 +43,7 @@ public class AdminController extends RootController {
     //restaurants
 
     /**
-     * Возвращает все рестораны.
-     *
-     * @return
+     * @return all restaurants.
      */
     @GetMapping(value = RESTAURANTS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Restaurant> getAllRestaurants() {
@@ -53,8 +52,7 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Создание/обновление ресторана.
-     *
+     * Create/update restaurant.
      * @param restaurant
      */
     @PostMapping(value = RESTAURANTS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -64,20 +62,17 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Возвращает ресторан по id.
-     *
      * @param restaurant_id
-     * @return
+     * @return restaurant by id.
      */
     @GetMapping(value = RESTAURANTS_URL + "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Restaurant getRestaurantById(@PathVariable("id") int restaurant_id) {
+    public Restaurant getRestaurantById(@PathVariable("id") int restaurant_id) throws EntityNotFoundException {
         log.info("User {} get restaurant {}", AuthUser.id(), restaurant_id);
         return restaurantService.getById(restaurant_id);
     }
 
     /**
-     * Удаляет ресторан по id.
-     *
+     * Delete restaurant by id.
      * @param restaurant_id
      */
     @DeleteMapping(value = RESTAURANTS_URL + "/{id}")
@@ -89,10 +84,9 @@ public class AdminController extends RootController {
     //menus
 
     /**
-     * Возвращает все меню ресторана. //TODO Сделать фильтрацию по параметрам
-     *
      * @param restaurant_id
-     * @return
+     * @return all restaurant menus.
+     * //TODO Create filters
      */
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MenuTo> getMenusByRestaurantId(@PathVariable("restaurant_id") int restaurant_id) {
@@ -104,25 +98,22 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Возвращает меню по id.
-     *
      * @param menu_id
-     * @return
+     * @return menu by id.
      */
     @GetMapping(value = {MENUS_URL + "/{menu_id}", RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public MenuTo getMenuById(@PathVariable("menu_id") int menu_id) {
+    public MenuTo getMenuById(@PathVariable("menu_id") int menu_id) throws EntityNotFoundException {
         log.info("User {} get menu {}", AuthUser.id(), menu_id);
         return MenuConverter.getToFromMenu(menuService.getById(menu_id));
     }
 
     /**
-     * Создание/обновление меню.
-     *
+     * Create/update menu.
      * @param restaurant_id
      * @param menuTo
      */
     @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createOrUpdateMenu(@PathVariable("restaurant_id") int restaurant_id, @Valid MenuTo menuTo) {
+    public void createOrUpdateMenu(@PathVariable("restaurant_id") int restaurant_id, @Valid MenuTo menuTo) throws EntityNotFoundException {
         log.info("User {} create/update menu {} for restaurant {}", AuthUser.id(), menuTo, restaurant_id);
         Menu menu = MenuConverter.getMenuFromTo(menuTo);
         menu.setRestaurant(restaurantService.getById(restaurant_id));
@@ -130,8 +121,7 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Удаляет меню по id.
-     *
+     * Delete menu by id.
      * @param menu_id
      */
     @DeleteMapping(value = {MENUS_URL + "/{menu_id}", RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}"})
@@ -143,13 +133,12 @@ public class AdminController extends RootController {
     //dishes
 
     /**
-     * Возвращает все блюда в меню.
-     *
      * @param menu_id
-     * @return
+     * @return all dishes by menu.
      */
     @GetMapping(value = {RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, MENUS_URL + "/{menu_id}" + DISHES_URL}, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DishTo> getDishesByMenuId(@PathVariable("menu_id") int menu_id) {
+        log.info("User {} get list dishes for menu {}", AuthUser.id(), menu_id);
         return dishService.getByMenuId(menu_id)
                 .stream()
                 .map(DishConverter::getToFromDish)
@@ -157,13 +146,12 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Создание/обновление блюда.
-     *
+     * Create/update dish.
      * @param menu_id
      * @param dishTo
      */
-    @PostMapping(value = MENUS_URL + "/{menu_id}" + DISHES_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createOrUpdateDish(@PathVariable("menu_id") int menu_id, @Valid DishTo dishTo) {
+    @PostMapping(value = {RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, MENUS_URL + "/{menu_id}" + DISHES_URL}, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void createOrUpdateDish(@PathVariable("menu_id") int menu_id, @Valid DishTo dishTo) throws EntityNotFoundException {
         log.info("User {} create/update dish {} of menu {}", AuthUser.id(), dishTo, menu_id);
         Dish dish = DishConverter.getDishFromTo(dishTo);
         dish.setMenu(menuService.getById(menu_id));
@@ -171,20 +159,17 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Возвращает блюдо по id.
-     *
      * @param dish_id
-     * @return
+     * @return dish by id.
      */
     @GetMapping(value = {RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}", DISHES_URL + "/{dish_id}"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public DishTo getDishById(@PathVariable("dish_id") int dish_id) {
+    public DishTo getDishById(@PathVariable("dish_id") int dish_id) throws EntityNotFoundException {
         log.info("User {} get dish {}", AuthUser.id(), dish_id);
         return DishConverter.getToFromDish(dishService.getById(dish_id));
     }
 
     /**
-     * Удаляет блюдо по id.
-     *
+     * Delete dish by id.
      * @param dish_id
      */
     @DeleteMapping(value = {MENUS_URL + "/{menu_id}" + DISHES_URL + "/{dish_id}", DISHES_URL + "/{dish_id}"})
@@ -196,9 +181,7 @@ public class AdminController extends RootController {
     //users
 
     /**
-     * Возвращает всех пользователей.
-     *
-     * @return
+     * @return all users.
      */
     @GetMapping(value = USERS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<User> getAllUsers() {
@@ -207,8 +190,7 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Создание/обновление пользователя.
-     *
+     * Create/update user.
      * @param userTo
      */
     @PostMapping(value = USERS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -218,20 +200,17 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Возвращает пользователя по id.
-     *
      * @param user_id
-     * @return
+     * @return user by id.
      */
     @GetMapping(value = USERS_URL + "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getUserById(@PathVariable("user_id") int user_id) {
+    public User getUserById(@PathVariable("user_id") int user_id) throws EntityNotFoundException {
         log.info("User {} get user {}", AuthUser.id(), user_id);
         return userService.getById(user_id);
     }
 
     /**
-     * Удаляет пользователя по id.
-     *
+     * Delete user by id.
      * @param user_id
      */
     @DeleteMapping(value = USERS_URL + "/{user_id}")
@@ -243,10 +222,8 @@ public class AdminController extends RootController {
     //votes
 
     /**
-     * Возвращает голоса пользователя за все время.
-     *
      * @param user_id
-     * @return
+     * @return user votes for all time.
      */
     @GetMapping(value = USERS_URL + "/{user_id}" + VOTES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Vote> getVotesByUser(@PathVariable("user_id") int user_id) {
@@ -255,22 +232,19 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Возвращает голос по id.
-     *
      * @param vote_id
-     * @return
+     * @return vote by id.
      */
     @GetMapping(value = VOTES_URL + "/{vote_id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Vote getUserVoteById(@PathVariable("vote_id") int vote_id) {
+    public Vote getUserVoteById(@PathVariable("vote_id") int vote_id) throws EntityNotFoundException {
         log.info("User {} get vote {}", AuthUser.id(), vote_id);
         return voteService.getById(vote_id);
     }
 
     /**
-     * Возвращает все голоса ресторана за все время.
-     *
      * @param restaurant_id
-     * @return
+     * @return votes of restaurant
+     * for all time.
      */
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Vote> getRestaurantVotesById(@PathVariable("restaurant_id") int restaurant_id) {
@@ -279,16 +253,14 @@ public class AdminController extends RootController {
     }
 
     /**
-     * Возвращает количество голосов ресторана.
-     * По умолчанию возвращает данные за текущий
-     * день (если не заданы параметры фильтрации).
-     *
      * @param restaurant_id
      * @param startDate
      * @param endDate
      * @param startTime
      * @param endTime
-     * @return
+     * @return count of restaurant votes.
+     * Default returns votes of current day
+     * (if filtering parameters not specified).
      */
     @GetMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + VOTES_URL + "/count", produces = MediaType.APPLICATION_JSON_VALUE)
     public int getAllCountRestaurantVotesById(
@@ -302,8 +274,6 @@ public class AdminController extends RootController {
         return voteService.getCountByRestaurantId(safeBeginCurrentDay(startDate, startTime), safeEndCurrentDay(endDate, endTime), restaurant_id);
     }
 
-    //tests (will be removed)
-
     //test string
     @GetMapping(value = ADMIN, produces = MediaType.APPLICATION_JSON_VALUE)
     public String getTestSecurity() {
@@ -313,7 +283,8 @@ public class AdminController extends RootController {
 
     //print data in console
     @PostMapping(value = "/date")
-    public void testLocalDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
+    public void testLocalDate(@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
+        if (localDateTime == null) localDateTime = LocalDateTime.now();
         System.out.println("Y : " + localDateTime.getYear());
         System.out.println("M: " + localDateTime.getMonth());
         System.out.println("D : " + localDateTime.getDayOfMonth());
