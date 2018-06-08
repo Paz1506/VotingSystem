@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/Paz1506/VotingSystem.svg?branch=master)](https://travis-ci.org/Paz1506/VotingSystem)
+
+
+
 # Voting system
 **Task:** Design and implement a REST API using Hibernate/Spring/SpringMVC (or Spring-Boot) without frontend. Build a voting system for deciding where to have lunch.
 
