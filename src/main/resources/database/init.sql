@@ -44,7 +44,7 @@ CREATE TABLE users
   registered       TIMESTAMP DEFAULT now() NOT NULL,
   enabled          BOOLEAN DEFAULT TRUE    NOT NULL
 );
-CREATE UNIQUE INDEX users_unique_email_idx ON USERS (email);
+--CREATE UNIQUE INDEX users_unique_email_idx ON USERS (email);
 
 CREATE TABLE role
 (

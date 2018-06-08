@@ -14,6 +14,14 @@ import java.io.Serializable;
 
 public class DishTo extends RootTo implements Serializable {
 
+    public DishTo() {
+    }
+
+    public DishTo(String name, Integer price) {
+        this.name = name;
+        this.price = price;
+    }
+
     public DishTo(Integer id, String name, Integer price) {
         super(id);
         this.name = name;

@@ -134,7 +134,7 @@ public class UserController extends RootController {
 
     /**
      * Voting of the user for the restaurant. You can vote only for one
-     * restaurant for the current day. Voting is strictly up to 11:00 current
+     * restaurant for the current day. Voting is strictly up to 11:00 AM current
      * day. Vote for the restaurant is canceled if the user:
      * ** Vote for another restaurant.
      * ** Vote for the same restaurant a second time. At the same time, vote is simply canceled.

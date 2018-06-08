@@ -12,6 +12,7 @@ import com.votingsystem.to.converters.MenuConverter;
 import com.votingsystem.to.converters.UserConverter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,6 +31,7 @@ import static com.votingsystem.util.DateTimeUtil.safeEndCurrentDay;
  * @author Paz1506
  * Controller for processing
  * administrators requests.
+ * //TODO process BindingResult in RequestBody methods
  */
 
 @RestController
@@ -56,7 +58,7 @@ public class AdminController extends RootController {
      * @param restaurant
      */
     @PostMapping(value = RESTAURANTS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createOrUpdateRestaurant(@Valid Restaurant restaurant) {
+    public void createOrUpdateRestaurant(@RequestBody @Valid Restaurant restaurant) {
         log.info("User {} create/update restaurant {}", AuthUser.id(), restaurant);
         restaurantService.save(restaurant);
     }
@@ -113,7 +115,7 @@ public class AdminController extends RootController {
      * @param menuTo
      */
     @PostMapping(value = RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createOrUpdateMenu(@PathVariable("restaurant_id") int restaurant_id, @Valid MenuTo menuTo) throws EntityNotFoundException {
+    public void createOrUpdateMenu(@PathVariable("restaurant_id") int restaurant_id, @RequestBody @Valid MenuTo menuTo) throws EntityNotFoundException {
         log.info("User {} create/update menu {} for restaurant {}", AuthUser.id(), menuTo, restaurant_id);
         Menu menu = MenuConverter.getMenuFromTo(menuTo);
         menu.setRestaurant(restaurantService.getById(restaurant_id));
@@ -151,7 +153,7 @@ public class AdminController extends RootController {
      * @param dishTo
      */
     @PostMapping(value = {RESTAURANTS_URL + "/{restaurant_id}" + MENUS_URL + "/{menu_id}" + DISHES_URL, MENUS_URL + "/{menu_id}" + DISHES_URL}, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createOrUpdateDish(@PathVariable("menu_id") int menu_id, @Valid DishTo dishTo) throws EntityNotFoundException {
+    public void createOrUpdateDish(@PathVariable("menu_id") int menu_id, @RequestBody @Valid DishTo dishTo) throws EntityNotFoundException {
         log.info("User {} create/update dish {} of menu {}", AuthUser.id(), dishTo, menu_id);
         Dish dish = DishConverter.getDishFromTo(dishTo);
         dish.setMenu(menuService.getById(menu_id));
@@ -194,7 +196,7 @@ public class AdminController extends RootController {
      * @param userTo
      */
     @PostMapping(value = USERS_URL, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void createOrUpdateUser(@Valid UserTo userTo) {
+    public void createOrUpdateUser(@RequestBody @Valid UserTo userTo) {
         log.info("User {} create/update user {}", AuthUser.id(), userTo);
         userService.save(UserConverter.getUserFromTo(userTo));
     }

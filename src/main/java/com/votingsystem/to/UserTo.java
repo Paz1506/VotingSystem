@@ -13,6 +13,15 @@ import java.io.Serializable;
 
 public class UserTo extends RootTo implements Serializable {
 
+    public UserTo() {
+    }
+
+    public UserTo(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
     public UserTo(Integer id, String name, String email, String password) {
         super(id);
         this.name = name;

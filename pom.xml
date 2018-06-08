@@ -59,7 +59,7 @@
                 <configuration>
                     <argLine>-Dfile.encoding=UTF-8</argLine>
                     <!--https://stackoverflow.com/questions/9320620/junit-maven-error-occured-in-starting-fork-check-output-in-log-->
-                    <!--<forkCount>0</forkCount>-->
+                    <forkCount>0</forkCount>
                 </configuration>
             </plugin>
         </plugins>

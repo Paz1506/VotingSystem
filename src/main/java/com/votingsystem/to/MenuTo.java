@@ -15,6 +15,14 @@ import java.time.LocalDateTime;
 
 public class MenuTo extends RootTo implements Serializable {
 
+    public MenuTo() {
+    }
+
+    public MenuTo(String name, LocalDateTime date) {
+        this.name = name;
+        this.date = date;
+    }
+
     public MenuTo(Integer id, String name, LocalDateTime date) {
         super(id);
         this.name = name;
