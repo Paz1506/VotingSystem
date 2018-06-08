@@ -32,6 +32,7 @@ P.S.: Asume that your API will be used by a frontend developer to build frontend
 
 The application was started and tested on **tomcat 8**
 
+ > **Note:** In application uses basic authorization, which is not recommended for real projects.
 
 ## Application API
 
