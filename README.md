@@ -1,5 +1,6 @@
 # Voting system
 **Task:** Design and implement a REST API using Hibernate/Spring/SpringMVC (or Spring-Boot) without frontend. Build a voting system for deciding where to have lunch.
+
 **Conditions:**
  - 2 types of users: admin and regular users;
  -  Admin can input a restaurant and it's lunch menu of the day (2-5 items usually, just a
@@ -34,6 +35,7 @@ Requests for API:
 - User-requests - allowed to the user with role USER  
  - Admin-requests - allowed only to the user with role of ADMIN
  > **Note:** Admin requests have prefix **/admin**
+ 
  > **Note:** The application provides compatibility with different versions. The version is specified in the query path: **/v1.0**
 
 ### User cURL requests:
