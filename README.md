@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/Paz1506/VotingSystem.svg?branch=master)](https://travis-ci.org/Paz1506/VotingSystem)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/09281b1cdde94ddf861ce6212f2753c3)](https://www.codacy.com/app/Paz1506/VotingSystem?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Paz1506/VotingSystem&amp;utm_campaign=Badge_Grade)
 
 
 
