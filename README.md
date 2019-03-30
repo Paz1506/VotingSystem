@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/Paz1506/VotingSystem.svg?branch=master)](https://travis-ci.org/Paz1506/VotingSystem)
-
+[![codebeat badge](https://codebeat.co/badges/0e57f670-95b9-4a47-a058-41246fa053d1)](https://codebeat.co/projects/github-com-paz1506-votingsystem-master)
 
 
 # Voting system (simple project for training course)
