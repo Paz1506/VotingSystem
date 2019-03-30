@@ -1,9 +1,8 @@
 [![Build Status](https://travis-ci.org/Paz1506/VotingSystem.svg?branch=master)](https://travis-ci.org/Paz1506/VotingSystem)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/09281b1cdde94ddf861ce6212f2753c3)](https://www.codacy.com/app/Paz1506/VotingSystem?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Paz1506/VotingSystem&amp;utm_campaign=Badge_Grade)
 
 
 
-# Voting system
+# Voting system (simple project for training course)
 **Task:** Design and implement a REST API using Hibernate/Spring/SpringMVC (or Spring-Boot) without frontend. Build a voting system for deciding where to have lunch.
 
 **Conditions:**
@@ -11,7 +10,7 @@
  -  Admin can input a restaurant and it's lunch menu of the day (2-5 items usually, just a
    dish name and price);
  - Menu changes each day (admins do the updates);
- - Users can vote on which restaurant they want to have lunch atж
+ - Users can vote on which restaurant they want to have lunch at
  - Only one vote counted per user If user votes again the same day;
 	 - If it is before 11:00 we asume that he changed his mind;
      - If it is after 11:00 then it is too late, vote can't be changed;
